@@ -9,16 +9,12 @@ end
 require 'rake'
 require 'rake/rdoctask'
 
-require 'rake/testtask'
+require 'rspec/core'
+require 'rspec/core/rake_task'
 
-Rake::TestTask.new(:test) do |t|
-  t.libs << 'lib'
-  t.libs << 'test'
-  t.pattern = 'test/**/*_test.rb'
-  t.verbose = false
-end
+RSpec::Core::RakeTask.new(:spec)
 
-task :default => :test
+task :default => :spec
 
 Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
