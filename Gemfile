@@ -10,7 +10,7 @@ gem "sqlite3"
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
 group :development do
-  gem "rspec", "~> 2.3.0"
+  gem "rspec", "~> 2.6.0"
   gem "yard", "~> 0.6.0"
   gem "cucumber", ">= 0"
   gem "bundler", "~> 1.0.0"
