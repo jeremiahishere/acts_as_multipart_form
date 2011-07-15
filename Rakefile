@@ -43,3 +43,16 @@ task :default => :spec
 
 require 'yard'
 YARD::Rake::YardocTask.new
+
+# hudson ci
+require 'ci/reporter/rake/rspec'
+namespace :hudson do
+  def report_path
+    "spec/reports/"
+  end
+
+  task :report_setup do
+    rm_rf report_path
+    mkdir_p report_path
+  end
+end
