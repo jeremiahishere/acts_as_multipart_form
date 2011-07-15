@@ -10,9 +10,9 @@ describe MultipartForm::InProgressForm do
 
       form_name = :person_form.to_s
 
-      valid_attributes = {
+      @valid_attributes = {
         :form_subject => @person,
-        :forn_name => "hire_form",
+        :form_name => "hire_form",
         :last_completed_step => "personal_info",
         :completed => "false"
       }
@@ -20,7 +20,7 @@ describe MultipartForm::InProgressForm do
     end
 
     it "should be valid" do
-      @ip_form.attributes = valid_attributes
+      @ip_form.attributes = @valid_attributes
       @ip_form.should be_valid
     end
 

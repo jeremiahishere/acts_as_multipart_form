@@ -14,6 +14,6 @@ module MultipartForm
     validates_presence_of :form_subject
     validates_presence_of :form_name
     validates_presence_of :last_completed_step
-    validates_presence_of :completed
+    validates_inclusion_of :completed, :in => [true, false]
   end
 end
