@@ -30,7 +30,7 @@ DESC
       end
 
       def copy_migration
-        migration_template "migrations/install_migration.rb", "db/migrate/create_multipart_forms_in_progress_forms.rb"
+        migration_template "migrations/install_migration.rb", "db/migrate/create_multipart_form_tables.rb"
       end
     end
   end
