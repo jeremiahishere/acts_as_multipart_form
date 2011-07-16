@@ -18,9 +18,13 @@ describe ActsAsMultipartForm::MultipartFormInModel do
       Person.new.multipart_forms.should == [:hire_form]
     end
 
-    it "should set the multipart_forms instance variable if a single symbol is given"
+    it "should set the multipart_forms instance variable if a single symbol is given" do
+      PersonWithMultipleForms.new.multipart_forms.should == [:hire_form, :fire_form]
+    end
 
-    it "should return if acts_as_multipart_form is called twice"
+    it "should return only the first call if acts_as_multipart_form is called twice" do
+      PersonWithMultipleActsAs.new.multipart_forms.should == [:hire_form]
+    end
   end
 
   describe "method_missing instance method" do
@@ -79,17 +83,46 @@ describe ActsAsMultipartForm::MultipartFormInModel do
     
     it "should return false if the multipart_form_controller_action does not start with the form name" do
       @person.multipart_form_controller_action = "personal_info"
-      @person.multipart_form_action?(:other_form_personal_info?).should be_true
+      @person.multipart_form_action?(:other_form_personal_info?).should be_false
     end
   end
 
   describe "reset_multipart_form_controller_action method" do
-    it "should set the controller action to nil"
+    before(:each) do
+      @person = Person.new
+      @person.multipart_form_controller_action = "action"
+    end
+
+    it "should set the controller action to nil" do
+      @person.reset_multipart_form_controller_action
+      @person.multipart_form_controller_action.should be_nil
+    end
+
+    it "should be called after save" do
+      @person.save
+      @person.multipart_form_controller_action.should be_nil
+    end
   end
 
-  describe "using_multipart_forms method" do
-    it "should return false if multipart forms is nil"
-    it "should return false if controller action is nil"
-    it "should return true if both are set"
+  describe "using_multipart_forms? method" do
+    before(:each) do
+      @person = Person.new
+      @person.multipart_forms = [:hire_form]
+      @person.multipart_form_controller_action = "action"
+    end
+
+    it "should return false if multipart forms is nil" do
+      @person.multipart_forms = nil
+      @person.using_multipart_forms?.should be_false
+    end
+
+    it "should return false if controller action is nil" do
+      @person.multipart_form_controller_action = nil
+      @person.using_multipart_forms?.should be_false
+    end
+
+    it "should return true if both are set" do
+      @person.using_multipart_forms?.should be_true
+    end
   end
 end

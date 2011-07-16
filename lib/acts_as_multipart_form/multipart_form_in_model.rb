@@ -37,7 +37,6 @@ module ActsAsMultipartForm
 
     module InstanceMethods
 
-
       # Sets the controller action to nil
       # When we are not performing a save (or other action from a controller), 
       # the controller action should not be set
@@ -93,6 +92,7 @@ module ActsAsMultipartForm
               return true
             end
           end
+          return false
         end
       end
     end
