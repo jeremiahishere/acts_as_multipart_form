@@ -32,14 +32,18 @@ describe ActsAsMultipartForm::MultipartFormInModel do
       @person = Person.new
     end
 
-    it "should return true if the method is found" do
+    it "should return true if the form matches and the action matches " do
       @person.stub!(:multipart_form_action?).and_return(true)
       @person.some_multipart_form_method.should be_true
     end
 
+    it "should return false if the method includes an existing form type but the action doesn't match" do
+      pending
+    end
+
     # I am not convinced that this covers all the test cases
     # but we are probably fine because we just need to know that super is called
-    it "should call super if the method is not found" do
+    it "should call super if the multipart form name does not match an exiting form name" do
       @person.stub!(:multipart_form_action?).and_return(false)
       lambda { @person.some_multipart_form_method }.should raise_error(NoMethodError)
     end
