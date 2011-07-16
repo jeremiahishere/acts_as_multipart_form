@@ -36,5 +36,16 @@ describe ActsAsMultipartForm::MultipartFormInModel do
   describe "multipart_form_action? instance method" do
     it "should return true if the form_name_controller_action matches the multipart_form_controller_action"
     it "should return false if the multipart_form_controller_action does not start with the form name"
+    it "should call using_multipart_forms?"
+  end
+
+  describe "reset_multipart_form_controller_action method" do
+    it "should set the controller action to nil"
+  end
+
+  describe "using_multipart_forms method" do
+    it "should return false if multipart forms is nil"
+    it "should return false if controller action is nil"
+    it "should return true if both are set"
   end
 end

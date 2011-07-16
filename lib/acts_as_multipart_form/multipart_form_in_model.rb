@@ -27,12 +27,29 @@ module ActsAsMultipartForm
         mattr_accessor :multipart_form_controller_action
         mattr_accessor :multipart_forms
         self.multipart_forms = options
+        
+        # after save, the current controller action should not be set
+        after_save :reset_multipart_form_controller_action
 
         include ActsAsMultipartForm::MultipartFormInModel::InstanceMethods
       end
     end
 
     module InstanceMethods
+
+
+      # Sets the controller action to nil
+      # When we are not performing a save (or other action from a controller), 
+      # the controller action should not be set
+      def reset_multipart_form_controller_action
+        self.multipart_form_controller_action = nil
+      end
+
+      # Determines whether multipart form controller is in use
+      # @returns [Boolean] True if both the multipart_forms and multipart_form_controller fields are set
+      def using_multipart_forms?
+        return(!self.multipart_forms.nil? && !self.multipart_form_controller_action.nil?)
+      end
 
       # Overrides method missing to return true if the method is of the form
       # multipart_form_name_multipart_controller_action
@@ -70,8 +87,7 @@ module ActsAsMultipartForm
       # @param [Symbol] sym The name of the method
       # @returns [Boolean] Whether or not the argument corresponds to a multipart form, otherwise super
       def multipart_form_action?(sym)
-        # the first part of this check should never fail unless someone explicitly sets the multipart_forms variable to nil
-        if (!self.multipart_forms.nil? && !self.multipart_form_controller_action.nil?)
+        if using_multipart_forms?
           self.multipart_forms.each do |form|
             if form.to_s + "_" + self.multipart_form_controller_action + "?" == sym.to_s
               return true
