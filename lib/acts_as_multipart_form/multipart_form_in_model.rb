@@ -1,3 +1,4 @@
+require "ruby-debug"
 module ActsAsMultipartForm
   module MultipartFormInModel
     
@@ -8,9 +9,11 @@ module ActsAsMultipartForm
     module ClassMethods
       def acts_as_multipart_form(options = [])
 
-        attr_accessor :multipart_form_controller_action
-        attr_accessor :multipart_forms
-        @multipart_forms = options
+        mattr_accessor :multipart_form_controller_action
+        mattr_accessor :multipart_forms
+        #write_inheritable_attribute(:multipart_forms, options)
+        self.multipart_forms = options
+
 
         include ActsAsMultipartForm::MultipartFormInModel::InstanceMethods
       end
