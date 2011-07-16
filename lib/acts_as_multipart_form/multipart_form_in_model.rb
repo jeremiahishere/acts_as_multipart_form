@@ -59,8 +59,8 @@ module ActsAsMultipartForm
       # @param [Array[ args The arguments of the method
       # @returns [Boolean] Whether or not the argument corresponds to a multipart form, otherwise super
       def method_missing(sym, *args)
-        if multipart_form_action?(sym)
-          return true
+        if multipart_form_method?(sym)
+          return multipart_form_controller_action?(sym)
         else
           super
         end
@@ -75,17 +75,33 @@ module ActsAsMultipartForm
       # @param [Array[ args The arguments of the method
       # @returns [Boolean] Whether or not the argument corresponds to a multipart form, otherwise super
       def respond_to?(sym, *args)
-        if multipart_form_action?(sym)
-          return true
+        if multipart_form_method?(sym)
+          return multipart_form_controller_action?(sym)
         else
           super
         end
       end
 
+      # determines whether the given method should be handled by the multipart form method handler
+      # based on whether it starts with the form name followed by an underscore
+      #
+      # @param [Symbol] sym Method to check
+      # @return [Boolean] Whether or not the symbol starts with one of the multipart forms
+      def multipart_form_method?(sym)
+        if self.multipart_forms
+          self.multipart_forms.each do |form|
+            if sym.to_s.match(/^#{form}_/)
+              return true
+            end
+          end
+        end
+        return false
+      end
+
       # Determines if the symbol corresponds to a multipart form action
       # @param [Symbol] sym The name of the method
       # @returns [Boolean] Whether or not the argument corresponds to a multipart form, otherwise super
-      def multipart_form_action?(sym)
+      def multipart_form_controller_action?(sym)
         if using_multipart_forms?
           self.multipart_forms.each do |form|
             if form.to_s + "_" + self.multipart_form_controller_action + "?" == sym.to_s

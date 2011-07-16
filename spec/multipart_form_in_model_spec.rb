@@ -33,18 +33,21 @@ describe ActsAsMultipartForm::MultipartFormInModel do
     end
 
     it "should return true if the form matches and the action matches " do
-      @person.stub!(:multipart_form_action?).and_return(true)
+      @person.stub!(:multipart_form_method?).and_return(true)
+      @person.stub!(:multipart_form_controller_action?).and_return(true)
       @person.some_multipart_form_method.should be_true
     end
 
     it "should return false if the method includes an existing form type but the action doesn't match" do
-      pending
+      @person.stub!(:multipart_form_method?).and_return(true)
+      @person.stub!(:multipart_form_controller_action?).and_return(false)
+      @person.some_multipart_form_method.should be_false
     end
 
     # I am not convinced that this covers all the test cases
     # but we are probably fine because we just need to know that super is called
     it "should call super if the multipart form name does not match an exiting form name" do
-      @person.stub!(:multipart_form_action?).and_return(false)
+      @person.stub!(:multipart_form_method?).and_return(false)
       lambda { @person.some_multipart_form_method }.should raise_error(NoMethodError)
     end
   end
@@ -54,40 +57,57 @@ describe ActsAsMultipartForm::MultipartFormInModel do
       @person = Person.new
     end
 
-    it "should return true if the method is found" do
-      @person.stub!(:multipart_form_action?).and_return(true)
+    it "should return true if the form matches and the action matches" do
+      @person.stub!(:multipart_form_method?).and_return(true)
+      @person.stub!(:multipart_form_controller_action?).and_return(true)
       @person.respond_to?(:some_multipart_form_method).should be_true
     end
 
-    it "should call super if the method is not found" do
-      @person.stub!(:multipart_form_action?).and_return(false)
-      @person.respond_to?(:class).should be_true
+    it "should return false if the form matches and the action doesn't match" do
+      @person.stub!(:multipart_form_method?).and_return(true)
+      @person.stub!(:multipart_form_controller_action?).and_return(false)
+      @person.respond_to?(:some_multipart_form_method).should be_false
     end
 
-    it "should return false if the method is not found and it is not found in super" do
-      @person.stub!(:multipart_form_action?).and_return(false)
-      @person.respond_to?(:some_multipart_form_method).should be_false
+    it "should call super if the method is not found" do
+      @person.stub!(:multipart_form_method?).and_return(false)
+      @person.respond_to?(:class).should be_true
     end
   end
 
-  describe "multipart_form_action? instance method" do
+  describe "multipart_form_controller_action? instance method" do
     before(:each) do
       @person = Person.new
     end
 
     it "should call using_multipart_forms?" do
       @person.should_receive(:using_multipart_forms?)
-      @person.multipart_form_action?(:some_multipart_form_action?)
+      @person.multipart_form_controller_action?(:some_multipart_form_controller_action?)
     end
 
     it "should return true if the form_name_controller_action matches the multipart_form_controller_action" do
       @person.multipart_form_controller_action = "personal_info"
-      @person.multipart_form_action?(:hire_form_personal_info?).should be_true
+      @person.multipart_form_controller_action?(:hire_form_personal_info?).should be_true
     end
     
     it "should return false if the multipart_form_controller_action does not start with the form name" do
       @person.multipart_form_controller_action = "personal_info"
-      @person.multipart_form_action?(:other_form_personal_info?).should be_false
+      @person.multipart_form_controller_action?(:other_form_personal_info?).should be_false
+    end
+  end
+
+  describe "multipart_form_method? method" do
+    before(:each) do
+      @person = Person.new
+      @person.multipart_forms = [:hire_form]
+    end
+
+    it "should return true if the symbol starts with a multipart form name" do
+      @person.multipart_form_method?(:hire_form_peronal_info).should be_true
+    end
+      
+    it "should return true if the symbol does not start with a multipart form name" do
+      @person.multipart_form_method?(:some_other_form_peronal_info).should be_false
     end
   end
 
