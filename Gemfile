@@ -11,6 +11,7 @@ gem "sqlite3"
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
 group :development do
+  gem 'ruby-debug19'
   gem "rspec", "~> 2.6.0"
   gem "rspec-rails", "~>2.6.1"
   gem "yard", "~> 0.6.0"
