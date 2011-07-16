@@ -14,9 +14,11 @@ describe ActsAsMultipartForm::MultipartFormInModel do
       Person.new.should respond_to :multipart_forms
     end
 
-    it "should set the multipart_forms instance variable" do
+    it "should set the multipart_forms instance variable if an array is given" do
       Person.new.multipart_forms.should == [:hire_form]
     end
+
+    it "should set the multipart_forms instance variable if a single symbol is given"
   end
 
   describe "method_missing instance method" do
