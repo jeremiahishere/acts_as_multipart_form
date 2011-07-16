@@ -1,4 +1,3 @@
-require "ruby-debug"
 module ActsAsMultipartForm
   # Specify this to let the model know to expect multipart_form controller actions
   # Allows the model to run conditional validations by giving access to methods
