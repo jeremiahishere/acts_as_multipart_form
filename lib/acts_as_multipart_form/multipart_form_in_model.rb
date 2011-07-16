@@ -25,7 +25,7 @@ module ActsAsMultipartForm
         end
       end
 
-      def respond_to?(sym)
+      def respond_to?(sym, *args)
         if multipart_form_action?(sym)
           return true
         else
@@ -34,9 +34,11 @@ module ActsAsMultipartForm
       end
 
       def multipart_form_action?(sym)
-        @multipart_forms.each do |form|
-          if form.to_s + "_" + @multipart_form_controller_action == sym.to_s
-            return true
+        if (!self.multipart_forms.nil? && !self.multipart_form_controller_action.nil?)
+          self.multipart_forms.each do |form|
+            if form.to_s + "_" + self.multipart_form_controller_action == sym.to_s
+              return true
+            end
           end
         end
       end

@@ -2,6 +2,21 @@ require 'spec_helper'
 
 describe ActsAsMultipartForm::MultipartFormInModel do
   describe "acts_as_multipart_form class method" do
+    it "should include instance methods" do
+      Person.new.should be_a_kind_of (ActsAsMultipartForm::MultipartFormInModel::InstanceMethods)
+    end
+
+    it "should make the multipart_form_controller_action instance variable accessible" do
+      Person.new.should respond_to :multipart_form_controller_action
+    end
+
+    it "should make the multipart_forms instance variable accessible" do
+      Person.new.should respond_to :multipart_forms
+    end
+
+    it "should set the multipart_forms instance variable" do
+      Person.new.multipart_forms.should == [:hire_form]
+    end
   end
 
   describe "method_missing instance method" do
