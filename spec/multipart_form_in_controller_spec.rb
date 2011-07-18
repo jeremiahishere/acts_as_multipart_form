@@ -2,8 +2,19 @@ require 'spec_helper'
 
 describe ActsAsMultipartForm::MultipartFormInController do
   describe "acts_as_multipart_form class method" do
-    it "should include instance methods"
-    it "should setup the multipart_forms hash"
+
+    it "should include instance methods" do
+      PeopleController.new.should be_a_kind_of (ActsAsMultipartForm::MultipartFormInController::InstanceMethods)
+    end
+
+    it "should setup the multipart_forms hash" do
+      PeopleController.new.should respond_to :multipart_forms
+    end
+
+    it "should save the parameters to multipart_forms hash" do
+      controller = PeopleController.new
+      controller.multipart_forms[:hire_form][:parts].should == [:person_info, :job_info]
+    end
   end
 
   describe "method_missing method" do

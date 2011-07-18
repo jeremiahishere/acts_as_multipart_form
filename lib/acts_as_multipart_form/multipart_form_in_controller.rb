@@ -6,13 +6,11 @@ module ActsAsMultipartForm
     end
 
     module ClassMethods
-      def acts_as_multipart_form(form_name, form_parts, options = {})
+      def acts_as_multipart_form(*args)
 
         mattr_accessor :multipart_forms unless self.respond_to?(:multipart_forms)
-
-        form_name = form_name.to_sym unless form_name.is_a?(Symbol)
         self.multipart_forms = {} unless self.multipart_forms.is_a?(Hash)
-        self.multipart_forms[form_name] = { :form_parts => form_parts, :options => options }
+        args.each { |arg| self.multipart_forms[arg[:name]] = arg }
         
         include ActsAsMultipartForm::MultipartFormInController::InstanceMethods
       end
