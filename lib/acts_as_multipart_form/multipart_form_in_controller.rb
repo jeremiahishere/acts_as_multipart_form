@@ -27,8 +27,15 @@ module ActsAsMultipartForm
       def acts_as_multipart_form(*args)
 
         mattr_accessor :multipart_forms unless self.respond_to?(:multipart_forms)
+        mattr_accessor :multipart_form_session_data unless self.respond_to?(:multipart_form_session_data)
+
         self.multipart_forms = {} unless self.multipart_forms.is_a?(Hash)
-        args.each { |arg| self.multipart_forms[arg[:name]] = arg }
+        self.multipart_form_session_data = {} unless self.multipart_form_session_data.is_a?(Hash)
+
+        args.each do |arg| 
+          self.multipart_forms[arg[:name]] = arg
+          self.multipart_form_session_data[arg[:name]] = {}
+        end
         
         include ActsAsMultipartForm::MultipartFormInController::InstanceMethods
       end
@@ -70,13 +77,39 @@ module ActsAsMultipartForm
         self.multipart_forms.keys.include?(sym)
       end
 
-      # Needs comments
+      # sample set of multipart form actions
+      # def person_info
+      #   @person = Person.find(params[:id])
+      # end
+      #
+      # def person_info_update
+      #   @person = Person.find(params[:id])
+      #  @person = Person.new if @person.nil?
+      #
+      #  save_multipart_form_data(form_instance_id, :person => @person.id)
+      #  valid = @person.update_attributes(params[:person])
+      #  return valid
+      # end
+      #
+      # def job_info
+      #   @job_position = JobPosition.new
+      #   @job_position.person = Person.find(load_multipart_form_data(form_instance_id, :person))
+      # end
+      # 
+      # def job_info_update
+      #   valid = @job_position.update_attributes(params[:job_position])
+      #   return valid
+      # end
+      #
+      # Needs more comments
+      #
       def multipart_form_handler(form_name_sym, args)
         # args includes the form instance id, the current form part
         # the record this form is associated with can be found by checking the polymorphic relationship in the form instance table
+          # may add an option to explicitly determine which model to associate the form with
 
         # if the form id is not set, create a new form instance record with blank set to the highest completed step
-        # else
+        # afterwards
           # try to call the method from the second argument (as long as it is one of the mulipartform parts)
             # need to be careful that we don't call an arbitrary method somewhere
             # the method should set some global varaibles that are automatically (??) available to the view
