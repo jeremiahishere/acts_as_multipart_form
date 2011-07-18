@@ -35,8 +35,7 @@ module ActsAsMultipartForm
     end
     
     module InstanceMethods
-
-      
+    
       # Overrides method missing to handle a multipart form if a method with the same name as a multipart form name is called
       # 
       # @param [Symbol] sym The name of the method
@@ -73,7 +72,27 @@ module ActsAsMultipartForm
 
       # Needs comments
       def multipart_form_handler(form_name_sym, args)
-        puts "Handling the multipart form for #{form_name_sym.to_s}"
+        # args includes the form instance id, the current form part
+        # the record this form is associated with can be found by checking the polymorphic relationship in the form instance table
+
+        # if the form id is not set, create a new form instance record with blank set to the highest completed step
+        # else
+          # try to call the method from the second argument (as long as it is one of the mulipartform parts)
+            # need to be careful that we don't call an arbitrary method somewhere
+            # the method should set some global varaibles that are automatically (??) available to the view
+          # if on a normal page
+            # set the form to submit to itself with new arguments
+            # render the partial with the name that corresponds to the parameter current form part
+          # else if on an update page
+            # the called method called at the beginning of the else block should return a boolean value
+            # if it returns true validations have passed
+              # redirect to the next form part, make sure submit location is set
+              # on the form instance, set the highest completed step to the current action
+              # if on the last page, render the view page, otherwise render the correct partial
+            # else validations have failed
+              # render the previous form part
+              # make sure errors are set
+              # make sure the url and submit actions get reset correctly
       end
     end
   end
