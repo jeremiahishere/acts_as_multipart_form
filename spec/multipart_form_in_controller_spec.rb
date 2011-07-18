@@ -18,11 +18,57 @@ describe ActsAsMultipartForm::MultipartFormInController do
   end
 
   describe "method_missing method" do
-    it "should call the multipart form handler any time a method is called with the same name as a multipart form"
+    before(:each) do
+      @controller = PeopleController.new
+    end
+
+    it "should call the multipart form handler any time a method is called with the same name as a multipart form" do
+      @controller.stub!(:multipart_form_action?).and_return(true)
+      @controller.should_receive(:multipart_form_handler)
+      @controller.generic_multipart_form
+    end
+
+    it "should call call super otherwise" do
+      @controller.stub!(:multipart_form_action?).and_return(false)
+      @controller.should_not_receive(:multipart_form_handler)
+      lambda { @controller.generic_multipart_form }.should raise_error(NoMethodError)
+    end
   end
 
   describe "respond_to method" do
-    it "should return true any time a method is called with the same name as a multipart form"
+    before(:each) do
+      @controller = PeopleController.new
+    end
+
+    it "should respond to a method with the same name as a multipart form" do
+      @controller.stub!(:multipart_form_action?).and_return(true)
+      @controller.should respond_to :general_multipart_form
+    end
+
+    it "should call super if the method does not have the same name as a multipart form" do
+      @controller.stub!(:multipart_form_action?).and_return(false)
+      @controller.should_not respond_to :general_multipart_form
+    end
+  end
+
+  describe "multipart_form_action? method" do
+    before(:each) do
+      @controller = PeopleController.new
+    end
+
+    it "should respond_to multipart_form_action?" do
+      @controller.respond_to?(:multipart_form_action?).should be_true
+    end
+
+    it "should be true if the key is included" do
+      @controller.multipart_forms.stub!(:keys).and_return([:hire_form])
+      @controller.multipart_form_action?(:hire_form).should be_true
+    end
+
+    it "should be false if the key is not included" do
+      @controller.multipart_forms.stub!(:keys).and_return([:some_other_form])
+      @controller.multipart_form_action?(:hire_form).should be_false
+    end
   end
 
   describe "multipart_form_handler method" do
