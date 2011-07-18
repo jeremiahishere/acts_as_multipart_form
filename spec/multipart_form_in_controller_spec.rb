@@ -3,10 +3,15 @@ require 'spec_helper'
 describe ActsAsMultipartForm::MultipartFormInController do
   describe "acts_as_multipart_form class method" do
     it "should include instance methods"
-    it "should error if it does not include a form_name_parts method for each multipart form"
-    it "should error if it does not include a method for each part of each form"
-    it "should error if it does not include a method for each update part of each form"
-    
+    it "should setup the multipart_forms hash"
+  end
+
+  describe "method_missing method" do
+    it "should call the multipart form handler any time a method is called with the same name as a multipart form"
+  end
+
+  describe "respond_to method" do
+    it "should return true any time a method is called with the same name as a multipart form"
   end
 
   describe "multipart_form_handler method" do
