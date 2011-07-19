@@ -22,9 +22,9 @@ describe ActsAsMultipartForm::MultipartFormInController do
       @controller = PeopleController.new
     end
 
-    it "should call the multipart form handler any time a method is called with the same name as a multipart form" do
+    it "should call the multipart form default handler any time a method is called with the same name as a multipart form" do
       @controller.stub!(:multipart_form_action?).and_return(true)
-      @controller.should_receive(:multipart_form_handler)
+      @controller.should_receive(:multipart_form_default_handler)
       @controller.generic_multipart_form
     end
 
@@ -113,6 +113,7 @@ describe ActsAsMultipartForm::MultipartFormInController do
       @controller = PeopleController.new
       @controller.multipart_forms[:hire_form][:parts] = [:personal_info, :job_info]
     end
+    
     it "should respond to first_multipart_form_part?" do
       @controller.should respond_to :first_multipart_form_part?
     end
@@ -147,11 +148,51 @@ describe ActsAsMultipartForm::MultipartFormInController do
   end
 
   describe "multipart_form_handler method" do
-    it "should have a handler method of some sort"
-    it "should be able to figure out the next step"
+    before(:each) do
+      @controller = PeopleController.new
+    end
+
+    it "should respond to multipart_form_handler" do
+      @controller.should respond_to :multipart_form_handler
+    end
+
+    it "should call the form handler" do
+      @controller.should_receive(:multipart_form_handler)
+      @controller.hire_form(:hire_form, :part => :personal_info)
+    end
+
+    it "should call the multipart form part method" do
+      @controller.should_receive(:personal_info)
+      @controller.hire_form(:hire_form, :part => :personal_info)
+    end
+
+    it "should not call the multipart form method if it is not a member of that form's parts" do
+      @controller.should_not_receive(:personal_info)
+      @controller.multipart_forms[:hire_form][:parts] = [:job_info, :job_info_update]
+      @controller.hire_form(:hire_form, :part => :personal_info)
+    end
+
+    # needs to be rewritten because assigns is not set unless i do a get :hire_form, :params => {}
+    # instead of calling it directly
+    it "should save the multipart form part for the form so it is available for the view" do
+      pending
+      @controller.hire_form(:hire_form, :part => :personal_info)
+      assigns[:multipart_form_part].should == :personal_info
+    end
+
+    it "should set the form part to the first part if no part is given in the args parameter"
+    it "should create an In Progress Form object if one is not supplied"
+    it "should default to the first form part if none is supplied"
+
+    it "should render a partial fo the specified form part if it does not end in _update"
+
+    it "should render the part after the most recently completed part if it is given a valid in_proress_form id and no part"
     it "should be able to figure when the last step is complete"
     it "should maintain the completed part state in the database"
     it "should do a bunch more things that are probably getting broken out into submethods"
   end
 
+  describe "multipart_form_default_handler method" do
+
+  end
 end

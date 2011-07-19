@@ -27,10 +27,7 @@ module ActsAsMultipartForm
       def acts_as_multipart_form(*args)
 
         mattr_accessor :multipart_forms unless self.respond_to?(:multipart_forms)
-        mattr_accessor :multipart_form_session_data unless self.respond_to?(:multipart_form_session_data)
-
         self.multipart_forms = {} unless self.multipart_forms.is_a?(Hash)
-        self.multipart_form_session_data = {} unless self.multipart_form_session_data.is_a?(Hash)
 
         args.each do |arg| 
           # add the update parts
@@ -44,6 +41,8 @@ module ActsAsMultipartForm
           self.multipart_forms[arg[:name]] = arg
         end
 
+        helper_method :multipart_form_handler
+
         include ActsAsMultipartForm::MultipartFormInController::InstanceMethods
         
       end
@@ -55,12 +54,12 @@ module ActsAsMultipartForm
       # 
       # @param [Symbol] sym The name of the method
       # @param [Array] args The arguments of the method
-      # @returns [?] If a multipart form action is matched, calls multipart_form_handler, otherwise calls super
+      # @returns [?] If a multipart form action is matched, calls multipart_form_default_handler, otherwise calls super
       def method_missing(sym, *args)
         if multipart_form_action?(sym)
-          multipart_form_handler(sym, args)
+          multipart_form_default_handler(sym, args)
         else
-          super(sym, *args)
+          super
         end
       end
 
@@ -131,6 +130,15 @@ module ActsAsMultipartForm
         self.multipart_forms[form][:parts].first == part
       end
 
+      # default multipart form handler
+      # needs to be tested
+      def multipart_form_default_handler(form_name, *args)
+        multipart_form_handler(form_name, *args)
+        #respond_to do |format|
+        #  format.html
+        #end
+      end
+      
       # sample set of multipart form actions
       # def person_info
       #   @person = Person.find(params[:id])
@@ -157,15 +165,32 @@ module ActsAsMultipartForm
       #
       # Needs more comments
       #
-      def multipart_form_handler(form_instance_id, form_name, part_name, args)
+      def multipart_form_handler(form_name, *args)
+        #form_name = args[0][0].to_sym
+        # this feels terrible but dealing with it for now
+        args = args[0][1]
+        part = args[:part].to_sym
+
+        @multipart_form_part = part
+        if (self.multipart_forms[form_name][:parts].include?(part))
+          self.send(part)
+          # this needs to be available to the view
+          @multipart_form_part = part
+        end
+
+        #render do |format|
+        #  format.html
+        #end
+      end
+      
+      def multipart_form_handler_try1(form_name, args)
         # args includes the form instance id, the current form part
-        # the record this form is associated with can be found by checking the polymorphic relationship in the form instance table
-          # may add an option to explicitly determine which model to associate the form with
-        part = part_name.to_sym
+        part = args[:part].to_sym || get_first_multipart_form_part(form_name)
+        in_progress_form_id = args[:in_progress_form_id] || nil
 
         # if the form id is not set, create a new form instance record with blank set to the highest completed step
-        if(form_instance_id < 1 && first_multipart_form_part?(part))
-          MultipartForm::InProgressForm.create()
+        if(form_instance_id.nil? && first_multipart_form_part?(part))
+          MultipartForm::InProgressForm.create(:form_subject => args[:form_subject], :form_name => form_name, :last_completed_step => "None", :completed => false)
         end
         # try to call the method from the second argument (as long as it is one of the mulipartform parts)
           # need to be careful that we don't call an arbitrary method somewhere
