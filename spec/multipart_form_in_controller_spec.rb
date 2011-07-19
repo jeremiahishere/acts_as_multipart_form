@@ -13,7 +13,7 @@ describe ActsAsMultipartForm::MultipartFormInController do
 
     it "should save the parameters to multipart_forms hash" do
       controller = PeopleController.new
-      controller.multipart_forms[:hire_form][:parts].should == [:person_info, :job_info]
+      controller.multipart_forms[:hire_form][:parts].should == [:person_info, :person_info_update, :job_info, :job_info_update]
     end
   end
 
@@ -48,6 +48,81 @@ describe ActsAsMultipartForm::MultipartFormInController do
     it "should call super if the method does not have the same name as a multipart form" do
       @controller.stub!(:multipart_form_action?).and_return(false)
       @controller.should_not respond_to :general_multipart_form
+    end
+  end
+
+  describe "get_next_multipart_form_part method" do
+    before(:each) do
+      @controller = PeopleController.new
+      @controller.multipart_forms[:hire_form][:parts] = [:personal_info, :job_info]
+    end
+
+    it "should respond to get_next_multipart_form_part" do
+      @controller.should respond_to :get_next_multipart_form_part
+    end
+
+    it "should return the next part" do
+      @controller.get_next_multipart_form_part(:hire_form, :personal_info).should == :job_info
+    end
+
+    it "should return the current part if on the last part" do
+      @controller.get_next_multipart_form_part(:hire_form, :job_info).should == :job_info
+    end
+  end
+
+  describe "get_previous_multipart_form_part method" do
+    before(:each) do
+      @controller = PeopleController.new
+      @controller.multipart_forms[:hire_form][:parts] = [:personal_info, :job_info]
+    end
+
+    it "should respond to get_previous_multipart_form_part" do
+      @controller.should respond_to :get_previous_multipart_form_part
+    end
+
+    it "should return the previous part" do
+      @controller.get_previous_multipart_form_part(:hire_form, :job_info).should == :personal_info
+    end
+
+    it "Should return the current part if on the first part" do
+      @controller.get_previous_multipart_form_part(:hire_form, :personal_info).should == :personal_info
+    end
+  end
+
+  describe "last_multipart_form_part? method" do
+    before(:each) do
+      @controller = PeopleController.new
+      @controller.multipart_forms[:hire_form][:parts] = [:personal_info, :job_info]
+    end
+
+    it "should respond to last_multipart_form_part?" do
+      @controller.should respond_to :last_multipart_form_part?
+    end
+
+    it "should return true if the parts match" do
+      @controller.last_multipart_form_part?(:hire_form, :job_info).should be_true
+    end
+
+    it "should return false if the parts don't match" do
+      @controller.last_multipart_form_part?(:hire_form, :personal_info).should be_false
+    end
+  end
+
+  describe "first_multipart_form_part? method" do
+    before(:each) do
+      @controller = PeopleController.new
+      @controller.multipart_forms[:hire_form][:parts] = [:personal_info, :job_info]
+    end
+    it "should respond to first_multipart_form_part?" do
+      @controller.should respond_to :first_multipart_form_part?
+    end
+
+    it "should return true if the parts match" do
+      @controller.first_multipart_form_part?(:hire_form, :personal_info).should be_true
+    end
+
+    it "should return false if the parts don't match" do
+      @controller.first_multipart_form_part?(:hire_form, :job_info).should be_false
     end
   end
 

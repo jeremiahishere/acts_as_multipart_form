@@ -33,11 +33,19 @@ module ActsAsMultipartForm
         self.multipart_form_session_data = {} unless self.multipart_form_session_data.is_a?(Hash)
 
         args.each do |arg| 
+          # add the update parts
+          parts = arg[:parts]
+          arg[:parts] = []
+          parts.each do |part|
+            arg[:parts] << part
+            arg[:parts] << (part.to_s + "_update").to_sym
+          end
+          # copy args to fields
           self.multipart_forms[arg[:name]] = arg
-          self.multipart_form_session_data[arg[:name]] = {}
         end
-        
+
         include ActsAsMultipartForm::MultipartFormInController::InstanceMethods
+        
       end
     end
     
@@ -77,20 +85,50 @@ module ActsAsMultipartForm
         self.multipart_forms.keys.include?(sym)
       end
 
-      # determines the next part
-      def get_previous_mulitpart_form_part(part)
+      # Gets the next multipart form part for the form or returns the current part if it is first
+      #
+      # @param [Symbol] form The name of the multipart form
+      # @param [Symbol] part The name of the current part
+      # @returns [Symbol] The name of the next part
+      def get_previous_multipart_form_part(form, part)
+        part_index = self.multipart_forms[form][:parts].index(part)
+        if part_index > 0
+          return self.multipart_forms[form][:parts][part_index - 1]
+        else
+          return part
+        end
       end
 
-      # determines the previous part
-      def get_next_mulitpart_form_part(part)
+      # Gets the previous multipart form part for the form or returns the current part if it is first
+      #
+      # @param [Symbol] form The name of the multipart form
+      # @param [Symbol] part The name of the current part
+      # @returns [Symbol] The name of the previous part
+      def get_next_multipart_form_part(form, part)
+        part_index = self.multipart_forms[form][:parts].index(part)
+        if part_index < self.multipart_forms[form][:parts].length - 1
+          return self.multipart_forms[form][:parts][part_index + 1]
+        else
+          return part
+        end
       end
 
-      # checks if it is the last part
-      def last_mulitpart_form_part?(part)
+      # Determines if the given multipart form part is the last part of the form
+      #
+      # @param [Symbol] form The name of the multipart form
+      # @param [Symbol] part The name o the current part
+      # @returns [Boolean] True if the given part matches the last part
+      def last_multipart_form_part?(form, part)
+        self.multipart_forms[form][:parts].last == part
       end
 
-      # checks if it is the first part
-      def first_mulitpart_form_part?(part)
+      # Determines if the given multipart form part is the first part of the form
+      #
+      # @param [Symbol] form The name of the multipart form
+      # @param [Symbol] part The name o the current part
+      # @returns [Boolean] True if the given part matches the first part
+      def first_multipart_form_part?(form, part)
+        self.multipart_forms[form][:parts].first == part
       end
 
       # sample set of multipart form actions
@@ -126,7 +164,7 @@ module ActsAsMultipartForm
         part = part_name.to_sym
 
         # if the form id is not set, create a new form instance record with blank set to the highest completed step
-        if(form_instance_id < 1 && first_multipart_form_part(part))
+        if(form_instance_id < 1 && first_multipart_form_part?(part))
           MultipartForm::InProgressForm.create()
         end
         # try to call the method from the second argument (as long as it is one of the mulipartform parts)
