@@ -177,11 +177,30 @@ module ActsAsMultipartForm
           part = self.multipart_forms[form_name][:parts].first
         end
 
-        # load the form information
+        # call and save the part information
         if(part && self.multipart_forms[form_name][:parts].include?(part.to_sym))
-          self.send(part)
+          result = self.send(part)
+          
+          if(part.match(/_update$/))
+            if(result && result[:valid])
+              # set highest completed part to the current part4
+              if(last_multipart_form_part?(form_name, part))
+                # render the view page(not sure how to do this)
+                redirect_to(some_path(in_progress_form.form_subject))
+              else
+                # render the next page
+                part = get_next_multipart_form_part(form_name, part)
+              end
+            else
+              # render the previous page
+              part = get_previous_multipart_form_part(form_name, part)
+              # somehow copy the errors over
+            end
+          end
           @multipart_form_part = part
         end
+
+
       end
       
       def multipart_form_handler_try1(form_name, args)

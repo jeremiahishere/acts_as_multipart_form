@@ -178,7 +178,7 @@ describe ActsAsMultipartForm::MultipartFormInController do
     # should be refactored so it doesn't hit the database
     it "should default to the last completed step of the in progress form is not set in params" do
       ipf = MultipartForm::InProgressForm.new(:last_completed_step => "person_info_update")
-      ipf.save(false)
+      ipf.save(:validate => false)
       params = {
         :action => :hire_form,
         :in_progress_form_id => ipf.id
@@ -203,10 +203,47 @@ describe ActsAsMultipartForm::MultipartFormInController do
       pending
     end
 
-    it "should render a partial fo the specified form part if it does not end in _update"
+    it "should render a partial of the specified form part if it does not end in _update"
 
-    it "should be able to figure when the last step is complete"
+    it "should go to the next part if the current part ends in _update and validations pass" do
+      @default_params = {
+        :action => :hire_form,
+        :multipart_form_part => :person_info_update,
+        :in_progress_form_id => 100
+      }
+      @controller.stub!(:params).and_return(@default_params)
+      @controller.stub!(:person_info_update).and_return({:valid => true})
+      @controller.should_receive(:job_info)
+      @controller.multipart_form_handler
+    end
+    
+    it "should go to the previous part if the current part ends in _update and the validations do not pass" do
+      @default_params = {
+        :action => :hire_form,
+        :multipart_form_part => :person_info_update,
+        :in_progress_form_id => 100
+      }
+      @controller.stub!(:params).and_return(@default_params)
+      @controller.stub!(:person_info_update).and_return({:valid => false})
+      @controller.should_receive(:person_info)
+      @controller.multipart_form_handler
+    end
+
+    # probably want to check what redirect to is being called with
+    it "should go to the view page if the current part ends in _update and the validations pass and the current part is the last part" do
+      @default_params = {
+        :action => :hire_form,
+        :multipart_form_part => :person_info_update,
+        :in_progress_form_id => 100
+      }
+      @controller.stub!(:params).and_return(@default_params)
+      @controller.stub!(:job_info_update).and_return({:valid => false})
+      @controller.should_receive(:redirect_to)
+      @controller.multipart_form_handler
+    end
+
     it "should maintain the completed part state in the database"
     it "should do a bunch more things that are probably getting broken out into submethods"
+    it "should possibly have support for update steps without form steps by form parts that end in _update and aren't duplicated"
   end
 end
