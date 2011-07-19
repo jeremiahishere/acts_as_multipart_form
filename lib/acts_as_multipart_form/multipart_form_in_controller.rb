@@ -29,6 +29,7 @@ module ActsAsMultipartForm
         mattr_accessor :multipart_forms unless self.respond_to?(:multipart_forms)
         self.multipart_forms = {} unless self.multipart_forms.is_a?(Hash)
 
+        forms = [] 
         args.each do |arg| 
           # add the update parts
           parts = arg[:parts]
@@ -39,9 +40,10 @@ module ActsAsMultipartForm
           end
           # copy args to fields
           self.multipart_forms[arg[:name]] = arg
+          forms << arg[:name]
         end
 
-        helper_method :multipart_form_handler
+        before_filter :multipart_form_handler, :only => forms
 
         include ActsAsMultipartForm::MultipartFormInController::InstanceMethods
         
@@ -55,26 +57,26 @@ module ActsAsMultipartForm
       # @param [Symbol] sym The name of the method
       # @param [Array] args The arguments of the method
       # @returns [?] If a multipart form action is matched, calls multipart_form_default_handler, otherwise calls super
-      def method_missing(sym, *args)
-        if multipart_form_action?(sym)
-          multipart_form_default_handler(sym, args)
-        else
-          super
-        end
-      end
+      #def method_missing(sym, *args)
+      #  if multipart_form_action?(sym)
+      #    multipart_form_default_handler(sym, args)
+      #  else
+      #    super
+      #  end
+      #end
 
       # Overrides respond_to? to return true if the symbol corresponds to a multipart form name
       # 
       # @param [Symbol] sym The name of the method
       # @param [Array] args The arguments of the method
       # @returns [True] If a multipart form action is matched returns true, otherwise calls super
-      def respond_to?(sym, *args)
-        if multipart_form_action?(sym)
-          return true
-        else
-          super(sym, *args)
-        end
-      end
+      #def respond_to?(sym, *args)
+      #  if multipart_form_action?(sym)
+      #    return true
+      #  else
+      #    super(sym, *args)
+      #  end
+      #end
 
       # Determines if the symbol matches a multipart form name
       #
@@ -129,15 +131,6 @@ module ActsAsMultipartForm
       def first_multipart_form_part?(form, part)
         self.multipart_forms[form][:parts].first == part
       end
-
-      # default multipart form handler
-      # needs to be tested
-      def multipart_form_default_handler(form_name, *args)
-        multipart_form_handler(form_name, *args)
-        #respond_to do |format|
-        #  format.html
-        #end
-      end
       
       # sample set of multipart form actions
       # def person_info
@@ -165,22 +158,30 @@ module ActsAsMultipartForm
       #
       # Needs more comments
       #
-      def multipart_form_handler(form_name, *args)
-        #form_name = args[0][0].to_sym
-        # this feels terrible but dealing with it for now
-        args = args[0][1]
-        part = args[:part].to_sym
+      def multipart_form_handler
+        form_name = params[:action]
+        in_progress_form_id = params[:in_progress_form_id]
 
-        @multipart_form_part = part
-        if (self.multipart_forms[form_name][:parts].include?(part))
-          self.send(part)
-          # this needs to be available to the view
-          @multipart_form_part = part
+        # get the in progress form, this may need some additional data
+        in_progress_form = MultipartForm::InProgressForm.find_by_id(params[:in_progress_form_id])
+        if !in_progress_form
+          in_progress_form = MultipartForm::InProgressForm.create(:form_name => form_name, :last_completed_step => "none")
         end
 
-        #render do |format|
-        #  format.html
-        #end
+        # set the part based on the params or in progress form
+        if params[:multipart_form_part]
+          part = params[:multipart_form_part].to_sym
+        elsif in_progress_form.last_completed_step != "none"
+          part = get_next_multipart_form_part(form_name, in_progress_form.last_completed_step.to_sym)
+        else
+          part = self.multipart_forms[form_name][:parts].first
+        end
+
+        # load the form information
+        if(part && self.multipart_forms[form_name][:parts].include?(part.to_sym))
+          self.send(part)
+          @multipart_form_part = part
+        end
       end
       
       def multipart_form_handler_try1(form_name, args)

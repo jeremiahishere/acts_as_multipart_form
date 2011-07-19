@@ -1,4 +1,8 @@
 Dummy::Application.routes.draw do
+  match "people/hire_form", :to => "people#hire_form"
+  match "people/hire_form/:in_progress_form_id", :to => "people#hire_form"
+  match "people/hire_form/:in_progress_form_id/:multipart_form_part", :to => "people#hire_form"
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
