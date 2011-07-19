@@ -77,6 +77,22 @@ module ActsAsMultipartForm
         self.multipart_forms.keys.include?(sym)
       end
 
+      # determines the next part
+      def get_previous_mulitpart_form_part(part)
+      end
+
+      # determines the previous part
+      def get_next_mulitpart_form_part(part)
+      end
+
+      # checks if it is the last part
+      def last_mulitpart_form_part?(part)
+      end
+
+      # checks if it is the first part
+      def first_mulitpart_form_part?(part)
+      end
+
       # sample set of multipart form actions
       # def person_info
       #   @person = Person.find(params[:id])
@@ -103,29 +119,60 @@ module ActsAsMultipartForm
       #
       # Needs more comments
       #
-      def multipart_form_handler(form_name_sym, args)
+      def multipart_form_handler(form_instance_id, form_name, part_name, args)
         # args includes the form instance id, the current form part
         # the record this form is associated with can be found by checking the polymorphic relationship in the form instance table
           # may add an option to explicitly determine which model to associate the form with
+        part = part_name.to_sym
 
         # if the form id is not set, create a new form instance record with blank set to the highest completed step
-        # afterwards
-          # try to call the method from the second argument (as long as it is one of the mulipartform parts)
-            # need to be careful that we don't call an arbitrary method somewhere
-            # the method should set some global varaibles that are automatically (??) available to the view
-          # if on a normal page
-            # set the form to submit to itself with new arguments
-            # render the partial with the name that corresponds to the parameter current form part
-          # else if on an update page
-            # the called method called at the beginning of the else block should return a boolean value
-            # if it returns true validations have passed
-              # redirect to the next form part, make sure submit location is set
-              # on the form instance, set the highest completed step to the current action
-              # if on the last page, render the view page, otherwise render the correct partial
-            # else validations have failed
-              # render the previous form part
-              # make sure errors are set
-              # make sure the url and submit actions get reset correctly
+        if(form_instance_id < 1 && first_multipart_form_part(part))
+          MultipartForm::InProgressForm.create()
+        end
+        # try to call the method from the second argument (as long as it is one of the mulipartform parts)
+          # need to be careful that we don't call an arbitrary method somewhere
+          # the method should set some global varaibles that are automatically (??) available to the view
+        if(multipart_form_action?(part))
+          data_valid = self.send(part)
+        end
+
+        # if on a normal page
+          # set the form to submit to itself with new arguments
+          # render the partial with the name that corresponds to the parameter current form part
+        if(part.match(/_update$/))
+          @multipart_form_partial = get_next_multipart_form_part(part)
+          respond_to do |format|
+            format.html { render :action => form_name.to_sym }
+            #format.xml sometime in the future
+          end
+
+        # else if on an update page
+          # the called method called at the beginning of the else block should return a boolean value
+        elsif
+          # if it returns true validations have passed
+            # redirect to the next form part, make sure submit location is set
+            # on the form instance, set the highest completed step to the current action
+            # if on the last page, render the view page, otherwise render the correct partial
+          if(data_valid) 
+            ipf = MultipartForm::InProgressForm.find_by_id(form_instance_id)
+            ipf.last_completed_step = part.to_s
+            ipf.save
+
+            
+            if(last_multipart_form_part?(part))
+              # render a view page
+            else
+              # render the next form part
+            end
+          # else validations have failed
+            # render the previous form part
+            # make sure errors are set
+            # make sure the url and submit actions get reset correctly
+          else
+            previous_part = get_previous_multipart_form_part(form_name, part)
+            #return multipart_form_handler(form_instance_id, form_name, previous_part, args + errors)
+          end
+        end
       end
     end
   end
