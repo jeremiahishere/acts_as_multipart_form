@@ -215,18 +215,36 @@ module ActsAsMultipartForm
         return in_progress_form
       end
 
-      # needs tests
+      # Adds a redirect based on the information passed in.
+      # If on the last part of the form, tries to redirect to the view page,
+      # otherwise to the next form part.
+      #
+      # This method needs signficantly more testing (7-20-2011)
+      #
+      # @param [Sybmol] form_name The name of the form
+      # @param [FormSubject] form_subject The subject of the form
+      # @param [Symbol] part The current form part
       def redirect_to_next_multipart_form_part(form_name, form_subject, part)
         # set highest completed part to the current part4
         if(last_multipart_form_part?(form_name, part))
           # render the view page(not sure how to do this)
-          redirect_to(some_path(in_progress_form.form_subject))
+          route = (self.multipart_forms[form_name][:model].underscore + "_path")
+          # possibly a good idea to check to make sure the route matches a route
+          if ActionController::Routing::Routes.named_routes.include?(route)
+            redirect_to( send(route, form_subject) )
+          else
+            raise "The route #{route} needs to be added to your routes file."
+          end
           completed = true
         else
           # render the next page
           next_part = get_next_multipart_form_part(form_name, part)
           # maybe pass in a route
-          redirect_to ( {:controller => params[:controller], :action => params[:action], :id => form_subject.id.to_s, :multipart_form_part =>  next_part.to_s} )
+          redirect_to ( {
+            :controller => params[:controller], 
+            :action => params[:action], 
+            :id => form_subject.id.to_s, 
+            :multipart_form_part =>  next_part.to_s} )
           completed = false
         end
         return completed
