@@ -17,40 +17,6 @@ describe ActsAsMultipartForm::MultipartFormInController do
     end
   end
 
-#  describe "method_missing method" do
-#    before(:each) do
-#      @controller = PeopleController.new
-#    end
-#
-#    it "should call the multipart form default handler any time a method is called with the same name as a multipart form" do
-#      @controller.stub!(:multipart_form_action?).and_return(true)
-#      @controller.should_receive(:multipart_form_default_handler)
-#      @controller.generic_multipart_form
-#    end
-#
-#    it "should call call super otherwise" do
-#      @controller.stub!(:multipart_form_action?).and_return(false)
-#      @controller.should_not_receive(:multipart_form_handler)
-#      lambda { @controller.generic_multipart_form }.should raise_error(NoMethodError)
-#    end
-#  end
-#
-#  describe "respond_to method" do
-#    before(:each) do
-#      @controller = PeopleController.new
-#    end
-#
-#    it "should respond to a method with the same name as a multipart form" do
-#      @controller.stub!(:multipart_form_action?).and_return(true)
-#      @controller.should respond_to :general_multipart_form
-#    end
-#
-#    it "should call super if the method does not have the same name as a multipart form" do
-#      @controller.stub!(:multipart_form_action?).and_return(false)
-#      @controller.should_not respond_to :general_multipart_form
-#    end
-#  end
-
   describe "get_next_multipart_form_part method" do
     before(:each) do
       @controller = PeopleController.new
@@ -206,6 +172,7 @@ describe ActsAsMultipartForm::MultipartFormInController do
     it "should render a partial of the specified form part if it does not end in _update"
 
     it "should go to the next part if the current part ends in _update and validations pass" do
+      pending
       @default_params = {
         :action => :hire_form,
         :multipart_form_part => :person_info_update,
@@ -218,6 +185,7 @@ describe ActsAsMultipartForm::MultipartFormInController do
     end
     
     it "should go to the previous part if the current part ends in _update and the validations do not pass" do
+      pending
       @default_params = {
         :action => :hire_form,
         :multipart_form_part => :person_info_update,
@@ -231,6 +199,7 @@ describe ActsAsMultipartForm::MultipartFormInController do
 
     # probably want to check what redirect to is being called with
     it "should go to the view page if the current part ends in _update and the validations pass and the current part is the last part" do
+      pending
       @default_params = {
         :action => :hire_form,
         :multipart_form_part => :person_info_update,
