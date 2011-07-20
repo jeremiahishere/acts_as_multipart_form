@@ -150,6 +150,8 @@ describe ActsAsMultipartForm::MultipartFormInController do
         :in_progress_form_id => ipf.id
       }
       @controller.stub!(:params).and_return(params)
+      @controller.stub!(:find_or_create_multipart_form_subect)
+      @controller.stub!(:find_or_create_multipart_in_progress_form).and_return(ipf)
       @controller.should_receive(:job_info)
       @controller.multipart_form_handler
     end

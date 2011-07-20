@@ -18,6 +18,7 @@ module ActsAsMultipartForm
       # The arguments takes several important values including:
       # name: The name of the multipart form.  This creates a controller action with that name that can be used in routes and other situations
       # parts: An array of multipart form parts.  Each part must have a corresponding part_name and part_name_update method
+      # model: The name of the model used to identify the multipart form.  Defaults to the singularized name of the controller.
       # other keys: Additional options for the multipart form system.
       #
       # The args parameter is an array of hashes and multiple multipart forms can be specified with a single acts_as_multipart_form call.
@@ -38,6 +39,8 @@ module ActsAsMultipartForm
             arg[:parts] << part
             arg[:parts] << (part.to_s + "_update").to_sym
           end
+          # sets default model if it is not set
+          arg[:model] = self.to_s.gsub("Controller", "").singularize unless arg.has_key?(:model)
           # copy args to fields
           self.multipart_forms[arg[:name]] = arg
           forms << arg[:name]
@@ -132,15 +135,40 @@ module ActsAsMultipartForm
       #
       # Needs more comments
       #
-      def multipart_form_handler
-        form_name = params[:action]
-        in_progress_form_id = params[:in_progress_form_id]
 
-        # get the in progress form, this may need some additional data
-        in_progress_form = MultipartForm::InProgressForm.find_by_id(params[:in_progress_form_id])
-        if !in_progress_form
-          in_progress_form = MultipartForm::InProgressForm.create(:form_name => form_name, :last_completed_step => "none")
+
+      # needs tests
+      def find_or_create_multipart_form_subject(form_name, form_subject_id)
+        # find or create the form subject
+        model = self.multipart_forms[form_name][:model]
+        if form_subject_id
+          form_subject = model.constantize.find(form_subject_id)
+        else
+          form_subject = model.constantize.new()
+          form_subject.save(:validate => false)
         end
+        return form_subject
+      end
+
+      # needs tests
+      def find_or_create_multipart_in_progress_form(form_name, form_subject)
+        # find or create the in progress form
+        # not sure why the polymorphic relationship isn't working here
+        in_progress_form = MultipartForm::InProgressForm.where(:form_subject_id => form_subject.id, :form_subject_type => form_subject.class.to_s, :form_name => form_name).first
+        if !in_progress_form
+          in_progress_form = MultipartForm::InProgressForm.create(:form_subject_id => form_subject.id, :form_subject_type => form_subject.class.to_s, :form_name => form_name, :last_completed_step => "none", :completed => false)
+        end
+        return in_progress_form
+      end
+
+      def multipart_form_handler
+        form_name = params[:action].to_sym
+        form_subject_id = params[:id]
+
+        form_subject = find_or_create_multipart_form_subject(form_name, form_subject_id)
+        params[:id] = form_subject.id
+
+        in_progress_form = find_or_create_multipart_in_progress_form(form_name, form_subject)
 
         # set the part based on the params or in progress form
         if params[:multipart_form_part]
