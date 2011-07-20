@@ -192,16 +192,18 @@ module ActsAsMultipartForm
               else
                 # render the next page
                 part = get_next_multipart_form_part(form_name, part)
+                # maybe pass in a route
+                redirect_to ( "/" + params[:controller] + "/" + params[:action] + "/" + form_subject.id.to_s + "/" + part.to_s )
               end
             else
-              # render the previous page
+              # render the previous page but stay on this page so we keep the errors
               part = get_previous_multipart_form_part(form_name, part)
-              # somehow copy the errors over
             end
           end
-          @multipart_form_part = part
+          # needs to be a string so that the view can read it
+          @multipart_form_part = part.to_s
+          @next_multipart_form_part = get_next_multipart_form_part(form_name, part).to_s
         end
-
       end
     end
   end

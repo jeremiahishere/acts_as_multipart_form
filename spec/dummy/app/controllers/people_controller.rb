@@ -7,6 +7,7 @@ class PeopleController < ApplicationController
 
   def person_info_update
     puts "Stub method for the person info update"
+    return {:valid => true}
   end
 
   def job_info
@@ -15,10 +16,12 @@ class PeopleController < ApplicationController
 
   def job_info_update
     puts "Stub method for the job info update"
+    return {:valid => true}
   end
 
   def hire_form
     puts "stub method for the hire form"
+    @person = Person.create
     
     respond_to do |format|
       format.html
