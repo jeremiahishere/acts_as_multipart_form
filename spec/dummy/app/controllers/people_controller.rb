@@ -1,5 +1,5 @@
 class PeopleController < ApplicationController
-  acts_as_multipart_form :name => :hire_form, :parts => [:person_info, :job_info]
+  acts_as_multipart_form :name => :hire_form, :parts => [:person_info, :job_info], :model => "Person"
 
   def person_info
     puts "Stub method for the person info"

@@ -15,6 +15,8 @@ describe ActsAsMultipartForm::MultipartFormInController do
       controller = PeopleController.new
       controller.multipart_forms[:hire_form][:parts].should == [:person_info, :person_info_update, :job_info, :job_info_update]
     end
+
+    it "should set the model if it is not given"
   end
 
   describe "get_next_multipart_form_part method" do
@@ -216,5 +218,52 @@ describe ActsAsMultipartForm::MultipartFormInController do
     it "should maintain the completed part state in the database"
     it "should do a bunch more things that are probably getting broken out into submethods"
     it "should possibly have support for update steps without form steps by form parts that end in _update and aren't duplicated"
+  end
+
+  describe "find_or_create_multipart_form_subject method" do
+    before(:each) do
+      @controller = PeopleController.new
+      @controller.multipart_forms[:hire_form][:model] = "Person"
+    end
+
+    it "should find the form subject on a valid id" do
+      Person.should_receive(:find)
+      @controller.find_or_create_multipart_form_subject(:hire_form, 1)
+    end
+
+    it "should create the form subject if there is no id given" do
+      p = mock_model(Person)
+      Person.should_receive(:new).and_return(p)
+      p.should_receive(:save).with(:validate => false)
+      @controller.find_or_create_multipart_form_subject(:hire_form, nil)
+    end
+
+    it "should return an error or nil if the id is invalid" do
+      Person.should_receive(:find).and_return(nil)
+      @controller.find_or_create_multipart_form_subject(:hire_form, 1).should be_nil
+    end
+  end
+
+  describe "find_or_create_multipart_in_progress_form method" do
+    before(:each) do
+      @controller = PeopleController.new
+      @form_subject = mock_model(Person)
+      @ipf = mock_model(MultipartForm::InProgressForm)
+    end
+
+    it "should find the in progress form if it exists" do
+      MultipartForm::InProgressForm.should_receive(:where).and_return([@ipf])
+      @controller.find_or_create_multipart_in_progress_form(:hire_form, @form_subject).should == @ipf
+    end
+    
+    it "should create an in progress form if it doesn't exist" do
+      MultipartForm::InProgressForm.should_receive(:create).and_return(@ipf)
+      @controller.find_or_create_multipart_in_progress_form(:hire_form, @form_subject).should == @ipf
+    end
+    
+    # maybe refactor so it doesn't hit the database
+    it "should create an in progress form with a last_completed_step initially set to 'none'" do
+      @controller.find_or_create_multipart_in_progress_form(:hire_form, @form_subject).last_completed_step.should == "none"
+    end
   end
 end

@@ -54,6 +54,68 @@ module ActsAsMultipartForm
     end
     
     module InstanceMethods
+
+      # sample set of multipart form actions
+      # def person_info
+      #   @person = Person.find(params[:id])
+      # end
+      #
+      # def person_info_update
+      #   @person = Person.find(params[:id])
+      #  @person = Person.new if @person.nil?
+      #
+      #  save_multipart_form_data(form_instance_id, :person => @person.id)
+      #  valid = @person.update_attributes(params[:person])
+      #  return valid
+      # end
+      #
+      # def job_info
+      #   @job_position = JobPosition.new
+      #   @job_position.person = Person.find(load_multipart_form_data(form_instance_id, :person))
+      # end
+      # 
+      # def job_info_update
+      #   valid = @job_position.update_attributes(params[:job_position])
+      #   return valid
+      # end
+
+      # needs comments
+      def multipart_form_handler
+        form_name = params[:action].to_sym
+        form_subject_id = params[:id]
+
+        form_subject = find_or_create_multipart_form_subject(form_name, form_subject_id)
+        params[:id] = form_subject.id
+
+        in_progress_form = find_or_create_multipart_in_progress_form(form_name, form_subject)
+
+        # set the part based on the params or in progress form
+        if params[:multipart_form_part]
+          part = params[:multipart_form_part].to_sym
+        elsif in_progress_form.last_completed_step != "none"
+          part = get_next_multipart_form_part(form_name, in_progress_form.last_completed_step.to_sym)
+        else
+          part = self.multipart_forms[form_name][:parts].first
+        end
+
+        # call and save the part information
+        if(part && self.multipart_forms[form_name][:parts].include?(part.to_sym))
+          result = self.send(part)
+          
+          if(part.match(/_update$/))
+            if(result && result[:valid])
+              completed = redirect_to_next_multipart_form_part(form_name, form_subject, part)
+              in_progress_form.update_attributes(:last_completed_step => :part, :completed => completed)
+            else
+              # render the previous page but stay on this page so we keep the errors
+              part = get_previous_multipart_form_part(form_name, part)
+            end
+          end
+          # needs to be a string so that the view can read it
+          @multipart_form_part = part.to_s
+          @next_multipart_form_part = get_next_multipart_form_part(form_name, part).to_s
+        end
+      end
     
       # Determines if the symbol matches a multipart form name
       #
@@ -109,35 +171,14 @@ module ActsAsMultipartForm
         self.multipart_forms[form][:parts].first == part
       end
       
-      # sample set of multipart form actions
-      # def person_info
-      #   @person = Person.find(params[:id])
-      # end
-      #
-      # def person_info_update
-      #   @person = Person.find(params[:id])
-      #  @person = Person.new if @person.nil?
-      #
-      #  save_multipart_form_data(form_instance_id, :person => @person.id)
-      #  valid = @person.update_attributes(params[:person])
-      #  return valid
-      # end
-      #
-      # def job_info
-      #   @job_position = JobPosition.new
-      #   @job_position.person = Person.find(load_multipart_form_data(form_instance_id, :person))
-      # end
-      # 
-      # def job_info_update
-      #   valid = @job_position.update_attributes(params[:job_position])
-      #   return valid
-      # end
-      #
-      # Needs more comments
-      #
 
-
-      # needs tests
+      # Given a form name and a form subject id, it creates the form subject
+      # The form subject is defined by the id and the multipart form's model attribute
+      # The subject is created with values and saved without validations (this might change in the future)
+      #
+      # @param [Symbol] form_name The name of the multipart form
+      # @param [Integer] form_dubject_id The id of the form subject (could be nil)
+      # @return [FormSubject] The form subject object based on the multipart form's model or nil if the id is set and not found
       def find_or_create_multipart_form_subject(form_name, form_subject_id)
         # find or create the form subject
         model = self.multipart_forms[form_name][:model]
@@ -150,61 +191,47 @@ module ActsAsMultipartForm
         return form_subject
       end
 
-      # needs tests
+      # Returns the InProgressForm object when given the form name and subject
+      # Creates the InPorgressForm object if it doesn't exist for the given form name/form subject pair
+      #
+      # @param [Symbol] form_name The name of the multipart form
+      # @param [FormSubject] form_subject The multipart form's subject
+      # @returns [InProgressForm] The associated or new in progress form object
       def find_or_create_multipart_in_progress_form(form_name, form_subject)
         # find or create the in progress form
         # not sure why the polymorphic relationship isn't working here
-        in_progress_form = MultipartForm::InProgressForm.where(:form_subject_id => form_subject.id, :form_subject_type => form_subject.class.to_s, :form_name => form_name).first
+        in_progress_form = MultipartForm::InProgressForm.where(
+          :form_subject_id => form_subject.id, 
+          :form_subject_type => form_subject.class.to_s, 
+          :form_name => form_name).first
         if !in_progress_form
-          in_progress_form = MultipartForm::InProgressForm.create(:form_subject_id => form_subject.id, :form_subject_type => form_subject.class.to_s, :form_name => form_name, :last_completed_step => "none", :completed => false)
+          in_progress_form = MultipartForm::InProgressForm.create(
+            :form_subject_id => form_subject.id, 
+            :form_subject_type => form_subject.class.to_s, 
+            :form_name => form_name, 
+            :last_completed_step => "none", 
+            :completed => false)
         end
         return in_progress_form
       end
 
-      def multipart_form_handler
-        form_name = params[:action].to_sym
-        form_subject_id = params[:id]
-
-        form_subject = find_or_create_multipart_form_subject(form_name, form_subject_id)
-        params[:id] = form_subject.id
-
-        in_progress_form = find_or_create_multipart_in_progress_form(form_name, form_subject)
-
-        # set the part based on the params or in progress form
-        if params[:multipart_form_part]
-          part = params[:multipart_form_part].to_sym
-        elsif in_progress_form.last_completed_step != "none"
-          part = get_next_multipart_form_part(form_name, in_progress_form.last_completed_step.to_sym)
+      # needs tests
+      def redirect_to_next_multipart_form_part(form_name, form_subject, part)
+        # set highest completed part to the current part4
+        if(last_multipart_form_part?(form_name, part))
+          # render the view page(not sure how to do this)
+          redirect_to(some_path(in_progress_form.form_subject))
+          completed = true
         else
-          part = self.multipart_forms[form_name][:parts].first
+          # render the next page
+          next_part = get_next_multipart_form_part(form_name, part)
+          # maybe pass in a route
+          redirect_to ( {:controller => params[:controller], :action => params[:action], :id => form_subject.id.to_s, :multipart_form_part =>  next_part.to_s} )
+          completed = false
         end
-
-        # call and save the part information
-        if(part && self.multipart_forms[form_name][:parts].include?(part.to_sym))
-          result = self.send(part)
-          
-          if(part.match(/_update$/))
-            if(result && result[:valid])
-              # set highest completed part to the current part4
-              if(last_multipart_form_part?(form_name, part))
-                # render the view page(not sure how to do this)
-                redirect_to(some_path(in_progress_form.form_subject))
-              else
-                # render the next page
-                part = get_next_multipart_form_part(form_name, part)
-                # maybe pass in a route
-                redirect_to ( "/" + params[:controller] + "/" + params[:action] + "/" + form_subject.id.to_s + "/" + part.to_s )
-              end
-            else
-              # render the previous page but stay on this page so we keep the errors
-              part = get_previous_multipart_form_part(form_name, part)
-            end
-          end
-          # needs to be a string so that the view can read it
-          @multipart_form_part = part.to_s
-          @next_multipart_form_part = get_next_multipart_form_part(form_name, part).to_s
-        end
+        return completed
       end
+
     end
   end
 end
