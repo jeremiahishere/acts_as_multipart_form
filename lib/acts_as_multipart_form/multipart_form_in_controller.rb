@@ -105,7 +105,7 @@ module ActsAsMultipartForm
           if(part.match(/_update$/))
             if(result && result[:valid])
               completed = redirect_to_next_multipart_form_part(form_name, form_subject, part)
-              in_progress_form.update_attributes(:last_completed_step => :part, :completed => completed)
+              in_progress_form.update_attributes(:last_completed_step => part, :completed => completed)
             else
               # render the previous page but stay on this page so we keep the errors
               part = get_previous_multipart_form_part(form_name, part)
@@ -228,9 +228,10 @@ module ActsAsMultipartForm
         # set highest completed part to the current part4
         if(last_multipart_form_part?(form_name, part))
           # render the view page(not sure how to do this)
-          route = (self.multipart_forms[form_name][:model].underscore + "_path")
+          route = (self.multipart_forms[form_name][:model].underscore + "_path").to_sym
+          debugger
           # possibly a good idea to check to make sure the route matches a route
-          if ActionController::Routing::Routes.named_routes.include?(route)
+          if Rails.application.routes.named_routes.helpers.include?(route)
             redirect_to( send(route, form_subject) )
           else
             raise "The route #{route} needs to be added to your routes file."

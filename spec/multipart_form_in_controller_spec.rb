@@ -16,7 +16,10 @@ describe ActsAsMultipartForm::MultipartFormInController do
       controller.multipart_forms[:hire_form][:parts].should == [:person_info, :person_info_update, :job_info, :job_info_update]
     end
 
-    it "should set the model if it is not given"
+    it "should set the model if it is not given" do
+      controller = PeopleController.new
+      controller.multipart_forms[:hire_form][:model].should == "Person"
+    end
   end
 
   describe "get_next_multipart_form_part method" do
@@ -168,56 +171,21 @@ describe ActsAsMultipartForm::MultipartFormInController do
       @controller.multipart_form_handler
     end
 
-    it "should create an In Progress Form object if one is not supplied" do
-      # the code is sort of doing this but I don't know how to set the form subject yet
-      pending
-    end
-
-    it "should render a partial of the specified form part if it does not end in _update"
-
-    it "should go to the next part if the current part ends in _update and validations pass" do
-      pending
-      @default_params = {
+    it "should maintain the completed part state in the database" do
+      params = {
         :action => :hire_form,
         :multipart_form_part => :person_info_update,
         :in_progress_form_id => 100
       }
-      @controller.stub!(:params).and_return(@default_params)
+      @controller.stub!(:params).and_return(params)
+      ipf = MultipartForm::InProgressForm.new
+      @controller.stub!(:find_or_create_multipart_in_progress_form).and_return(ipf)
       @controller.stub!(:person_info_update).and_return({:valid => true})
-      @controller.should_receive(:job_info)
-      @controller.multipart_form_handler
-    end
-    
-    it "should go to the previous part if the current part ends in _update and the validations do not pass" do
-      pending
-      @default_params = {
-        :action => :hire_form,
-        :multipart_form_part => :person_info_update,
-        :in_progress_form_id => 100
-      }
-      @controller.stub!(:params).and_return(@default_params)
-      @controller.stub!(:person_info_update).and_return({:valid => false})
-      @controller.should_receive(:person_info)
-      @controller.multipart_form_handler
-    end
+      @controller.stub!(:redirect_to_next_multipart_form_part).and_return(false)
+      ipf.should_receive(:update_attributes).with(:completed => false, :last_completed_step => :person_info_update)
 
-    # probably want to check what redirect to is being called with
-    it "should go to the view page if the current part ends in _update and the validations pass and the current part is the last part" do
-      pending
-      @default_params = {
-        :action => :hire_form,
-        :multipart_form_part => :person_info_update,
-        :in_progress_form_id => 100
-      }
-      @controller.stub!(:params).and_return(@default_params)
-      @controller.stub!(:job_info_update).and_return({:valid => false})
-      @controller.should_receive(:redirect_to)
       @controller.multipart_form_handler
     end
-
-    it "should maintain the completed part state in the database"
-    it "should do a bunch more things that are probably getting broken out into submethods"
-    it "should possibly have support for update steps without form steps by form parts that end in _update and aren't duplicated"
   end
 
   describe "find_or_create_multipart_form_subject method" do
@@ -276,7 +244,6 @@ describe ActsAsMultipartForm::MultipartFormInController do
       @form_subject = mock_model(Person)
       @form_subject.stub!(:id).and_return(1)
       @part = :person_info
-      ActionController::Routing::Routes.stub!(:named_routes).and_return([:person_path])
     end
 
     it "should redirect to the view page if on the last step" do
