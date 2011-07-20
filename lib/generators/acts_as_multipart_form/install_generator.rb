@@ -32,7 +32,7 @@ DESC
       # Creates the config file
       # Commented out until the config actually has information
       def copy_config_file
-        #copy_file "config.rb", "config/initializers/acts_as_multipart_form.rb"
+        copy_file "config.rb", "config/initializers/acts_as_multipart_form.rb"
       end
 
       # Creates the migration
