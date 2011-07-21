@@ -122,6 +122,7 @@ module ActsAsMultipartForm
           @next_multipart_form_part = get_next_multipart_form_part(form_name, part).to_s
           @form_subject = form_subject
           @available_multipart_form_parts = get_available_multipart_form_parts(form_name, in_progress_form.last_completed_step)
+          @multipart_form_path = (self.multipart_forms[form_name][:form_route] + "_path").to_sym
         end
       end
     
