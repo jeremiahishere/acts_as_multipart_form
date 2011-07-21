@@ -1,4 +1,4 @@
-ActsAsMultipartForm.configure do |config
+ActsAsMultipartForm.configure do |config|
   # config.show_completed = false
   # config.show_incomplete_parts = false
   # config.use_numbered_parts_on_index = true
