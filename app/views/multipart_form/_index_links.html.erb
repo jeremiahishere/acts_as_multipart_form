@@ -1,0 +1,12 @@
+<div class='multipart_form_index_links'
+  <div class='multipart_form_index_links_links'>
+    <% @available_multipart_form_parts.each do |part, part_name| %>
+      <%= link_to part_name.to_s.titleize, send(@multipart_form_path, :id => @form_subject.id, :multipart_form_part => part) %>
+    <% end %>
+  </div>
+  <% if ActsAsMultipartForm.config.show_completed %>
+    <div class='multipart_form_index_links_complete'>
+      Incomplete
+    </div>  
+  <% end %>
+</div>
