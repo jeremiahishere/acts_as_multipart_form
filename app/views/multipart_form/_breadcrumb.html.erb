@@ -1,0 +1,17 @@
+<div id='<%= locals[:form_name] %>'>
+  <% if ActsAsMultipartForm.config.show_previous_next_links %>
+    <%= link_to "Previous" locals[:form_path](locals[:form_subject], @previous_multipart_form_part) %>
+  <% end %>
+  <% locals[:available_form_parts].each do |part| %>
+    <% if part != @multipart_form_part %>
+      <%= link_to locals[:form_path](locals[:form_subject].id, part) %>
+    <% else %>
+      <h4>
+        <%= part %>
+      </h4>
+    <% end %>
+  <% end %>
+  <% if ActsAsMultipartForm.config.show_previous_next_links %>
+    <%= link_to "Previous" locals[:form_path](locals[:form_subject], @next_multipart_form_part) %>
+  <% end %>
+</div>
