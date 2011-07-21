@@ -25,6 +25,29 @@ module ActsAsMultipartForm
       # The args parameter is an array of hashes and multiple multipart forms can be specified with a single acts_as_multipart_form call.
       # To keep the lines from being too long, acts_as_multipart_form can be called multiple times to setup the forms
       #
+      # sample set of multipart form actions
+      # def person_info
+      #   @person = Person.find(params[:id])
+      # end
+      #
+      # def person_info_update
+      #   @person = Person.find(params[:id])
+      #   @person = Person.new if @person.nil?
+      #
+      #   valid = @person.update_attributes(params[:person])
+      #   return {:valid => valid, :errors => @person.errors}
+      # end
+      #
+      # def job_info
+      #   @job_position = JobPosition.new
+      #   @job_position.person = Person.find(load_multipart_form_data(form_instance_id, :person))
+      # end
+      # 
+      # def job_info_update
+      #   valid = @job_position.update_attributes(params[:job_position])
+      #   return {:valid => valid, :errors => @job_position.errors}
+      # end
+      #
       # @param [Array] args An array of hashes that determines the data for a multipart form
       def acts_as_multipart_form(*args)
 
@@ -58,31 +81,12 @@ module ActsAsMultipartForm
     
     module InstanceMethods
 
-      # sample set of multipart form actions
-      # def person_info
-      #   @person = Person.find(params[:id])
-      # end
-      #
-      # def person_info_update
-      #   @person = Person.find(params[:id])
-      #  @person = Person.new if @person.nil?
-      #
-      #  save_multipart_form_data(form_instance_id, :person => @person.id)
-      #  valid = @person.update_attributes(params[:person])
-      #  return valid
-      # end
-      #
-      # def job_info
-      #   @job_position = JobPosition.new
-      #   @job_position.person = Person.find(load_multipart_form_data(form_instance_id, :person))
-      # end
-      # 
-      # def job_info_update
-      #   valid = @job_position.update_attributes(params[:job_position])
-      #   return valid
-      # end
 
-      # needs comments
+      # Handles multipart form setup on the controller
+      # Automatically called on the hire form action as a before filter
+      #
+      # It adds a bunch of instance variables to the controller so they are accessible to the view page.
+      # Not sure if this is the best way to do things
       def multipart_form_handler
         form_name = params[:action].to_sym
         form_subject_id = params[:id]
