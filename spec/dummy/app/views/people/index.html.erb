@@ -1,0 +1,16 @@
+<table>
+  <tr>
+    <th>Id</th>
+    <th>Name</th>
+    <th>Hire Form</th>
+  </tr>
+  <% @people.each do |person| %>
+    <tr>
+      <td><%= person.id %></td>
+      <td><%= person.name %></td>
+      <td>
+        <%= render "multipart_form/index_links", :locals => {:form_subject => person } %>
+      </td>
+    </tr>
+  <% end %>
+</table>

@@ -81,6 +81,17 @@ module ActsAsMultipartForm
     
     module InstanceMethods
 
+      # needs comments
+      def load_multipart_form_index_links(form_name, form_subjects)
+        @multipart_form_index_parts = {}
+        form_subjects.each do |form_subject|
+          in_progress_form = find_or_create_multipart_in_progress_form(form_name, form_subject)
+          @multipart_form_index_parts[form_subject.id] = {}
+          @multipart_form_index_parts[form_subject.id][:parts] = get_available_multipart_form_parts(form_name, in_progress_form.last_completed_step)
+          @multipart_form_index_parts[form_subject.id][:completed] = in_progress_form.completed
+        end
+        @multipart_form_path = (self.multipart_forms[form_name][:form_route] + "_path").to_sym
+      end
 
       # Handles multipart form setup on the controller
       # Automatically called on the hire form action as a before filter
@@ -127,6 +138,7 @@ module ActsAsMultipartForm
           @form_subject = form_subject
           @available_multipart_form_parts = get_available_multipart_form_parts(form_name, in_progress_form.last_completed_step)
           @multipart_form_path = (self.multipart_forms[form_name][:form_route] + "_path").to_sym
+          @multipart_form_complete = in_progress_form.completed
         end
       end
     

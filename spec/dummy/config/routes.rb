@@ -1,6 +1,6 @@
 Dummy::Application.routes.draw do
 
-  match "person/:id", :to => "people#show", :as => "person"
+  resources :people
 
   match "people/hire_form/:id/:multipart_form_part", :to => "people#hire_form", :as => "person_hire_form"
   match "people/hire_form/:id", :to => "people#hire_form", :as => "person_hire_form"

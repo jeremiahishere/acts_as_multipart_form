@@ -1,5 +1,5 @@
 class PeopleController < ApplicationController
-  acts_as_multipart_form :name => :hire_form, :parts => [:person_info, :job_info], :model => "Person"
+  acts_as_multipart_form :name => :hire_form, :parts => [:person_info, :job_info], :model => "Person", :form_route => "person_hire_form"
 
   def person_info
     puts "Stub method for the person info"
@@ -23,6 +23,15 @@ class PeopleController < ApplicationController
     puts "stub method for the hire form"
     @person = Person.find(params[:id])
     
+    respond_to do |format|
+      format.html
+    end
+  end
+
+  def index
+    @people = Person.all
+    load_multipart_form_index_links(:hire_form, @people)
+
     respond_to do |format|
       format.html
     end
