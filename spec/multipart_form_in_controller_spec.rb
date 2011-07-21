@@ -322,35 +322,39 @@ describe ActsAsMultipartForm::MultipartFormInController do
 
     it "should return a hash" do
       ActsAsMultipartForm.config.stub!(:show_incomplete_parts).and_return(true)
-      @controller.get_available_multipart_form_parts(@form_name, @last_completed_part).should be_a_kind_of Hash
+      @controller.get_available_multipart_form_parts(@form_name, @last_completed_part).should be_a_kind_of Array
     end
 
     it "should return the parts" do
       ActsAsMultipartForm.config.stub!(:show_incomplete_parts).and_return(true)
       results = @controller.get_available_multipart_form_parts(@form_name, @last_completed_part)
-      results.should include :person_info
-      results.should include :job_info
+      results[0][:name].should == :person_info
+      results[1][:name].should == :job_info
     end
 
     it "should not return the _update parts" do
       ActsAsMultipartForm.config.stub!(:show_incomplete_parts).and_return(true)
       results = @controller.get_available_multipart_form_parts(@form_name, @last_completed_part)
-      results.should_not include :person_info_update
-      results.should_not include :job_info_update
+      results.each do |result|
+        result[:name].should_not == :person_info_update
+        result[:name].should_not == :job_info_update
+      end
     end
 
     it "should not return future parts if the config is set to not show incomplete parts" do
       ActsAsMultipartForm.config.stub!(:show_incomplete_parts).and_return(false)
       results = @controller.get_available_multipart_form_parts(@form_name, @last_completed_part)
-      results.should include :person_info
-      results.should_not include :job_info
-
+      results[0][:name].should == :person_info
+      results.each do |result|
+        result[:name].should_not == :job_info
+      end
     end
+    
     it "should return future parts if the config is set to show incomplete parts" do
       ActsAsMultipartForm.config.stub!(:show_incomplete_parts).and_return(true)
       results = @controller.get_available_multipart_form_parts(@form_name, @last_completed_part)
-      results.should include :person_info
-      results.should include :job_info
+      results[0][:name].should == :person_info
+      results[1][:name].should == :job_info
     end
   end
 end

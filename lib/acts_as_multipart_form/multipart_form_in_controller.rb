@@ -283,15 +283,11 @@ module ActsAsMultipartForm
       # @returns [Array] An array of form part symbols with no _update parts and other config restrictions
       def get_available_multipart_form_parts(form_name, last_completed_part)
         add_parts = true
-        parts = {}
+        parts = []
         # loop over the parts
         self.multipart_forms[form_name][:parts].each do |part|
           if( add_parts && !part.match(/_update$/) )
-            if ActsAsMultipartForm.config.use_numbered_parts_on_index
-              parts[part] = parts.length + 1
-            else
-              parts[part] = part 
-            end
+            parts << { :name => part, :number => parts.length + 1 }
           end
           if !ActsAsMultipartForm.config.show_incomplete_parts && part.to_s == last_completed_part.to_s
             add_parts = false 
