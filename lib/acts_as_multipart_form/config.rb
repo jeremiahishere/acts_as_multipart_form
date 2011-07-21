@@ -3,6 +3,7 @@ require 'active_support/configurable'
 
 module ActsAsMultipartForm
 
+  # create new configs by passing a block with the config assignment
   def self.configure(&block)
     yield @config ||= ActsAsMultipartForm::Configuration.new
   end
@@ -11,6 +12,7 @@ module ActsAsMultipartForm
     @config
   end
 
+  # setup config data
   class Configuration
     include ActiveSupport::Configurable
     config_accessor :show_completed
@@ -23,6 +25,8 @@ module ActsAsMultipartForm
     end
   end
 
+  # setup default options
+  # this should match the generator config that goes in the initializer file
   configure do |config|
     config.show_completed = true
     config.show_incomplete_parts = false
