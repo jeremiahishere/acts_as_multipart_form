@@ -2,8 +2,7 @@
   This is the hire form view
 </p>
 
-
-<%= render "multipart_form/breadcrumb", :locals => {} %>
+<%= render "multipart_form/breadcrumb" %>
 
 <%= form_for @person, :url => person_hire_person_path(@form_subject, @next_multipart_form_part), :html => {:method => :post} do |f| %>
   <%= render @multipart_form_part %>

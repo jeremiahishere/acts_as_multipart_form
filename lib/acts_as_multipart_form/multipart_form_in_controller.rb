@@ -254,6 +254,24 @@ module ActsAsMultipartForm
         return completed
       end
 
+      # Gets the multipart form parts the user is allowed to directly link to 
+      # with respect to the config information.
+      #
+      # If the config option show_incomplete_parts is set to false, do not return parts past the in_progress_form's last completed step
+      #
+      # @param [Symbol] form_name The name of the form
+      # @returns [Array] An array of form part symbols with no _update parts and other config restrictions
+      def get_available_multipart_form_parts(form_name, in_progress_form)
+        add_parts = true
+        parts = []
+        # loop over the parts
+        self.multipart_form_parts[form][:parts].each do |part|
+          parts << part if add_parts && !part.match(/_update$/)
+          add_parts = false if !ActsAsMultipartForm.config.show_incomplete_parts && part = in_progress_form.last_completed_part
+        end
+        return parts
+      end
+
     end
   end
 end
