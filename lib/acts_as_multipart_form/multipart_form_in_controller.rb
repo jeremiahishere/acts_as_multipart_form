@@ -19,7 +19,8 @@ module ActsAsMultipartForm
       # name: The name of the multipart form.  This creates a controller action with that name that can be used in routes and other situations
       # parts: An array of multipart form parts.  Each part must have a corresponding part_name and part_name_update method
       # model: The name of the model used to identify the multipart form.  Defaults to the singularized name of the controller.
-      # other keys: Additional options for the multipart form system.
+      # form_route: The route for the form as specified in the config/routes file. Defaults to model_form_name downcased.
+      # show_route: The route the form redirects to once the last part is filled out.  Defaults to the name of the model, downcased.
       #
       # The args parameter is an array of hashes and multiple multipart forms can be specified with a single acts_as_multipart_form call.
       # To keep the lines from being too long, acts_as_multipart_form can be called multiple times to setup the forms
@@ -41,6 +42,8 @@ module ActsAsMultipartForm
           end
           # sets default model if it is not set
           arg[:model] = self.to_s.gsub("Controller", "").singularize unless arg.has_key?(:model)
+          arg[:form_route] = (arg[:model].downcase + "_" + arg[:name].to_s) unless arg.has_key?(:form_route)
+          arg[:show_route] = (arg[:model].downcase) unless arg.has_key?(:show_route)
           # copy args to fields
           self.multipart_forms[arg[:name]] = arg
           forms << arg[:name]
@@ -231,11 +234,9 @@ module ActsAsMultipartForm
         # set highest completed part to the current part4
         if(last_multipart_form_part?(form_name, part))
           # render the view page(not sure how to do this)
-          route = (self.multipart_forms[form_name][:model].underscore + "_path").to_sym
-          debugger
           # possibly a good idea to check to make sure the route matches a route
           if Rails.application.routes.named_routes.helpers.include?(route)
-            redirect_to( send(route, form_subject) )
+            redirect_to( send(self.multipart_forms[form_name][:show_route] + "_path", form_subject) )
           else
             raise "The route #{route} needs to be added to your routes file."
           end
@@ -244,11 +245,10 @@ module ActsAsMultipartForm
           # render the next page
           next_part = get_next_multipart_form_part(form_name, part)
           # maybe pass in a route
-          redirect_to ( {
-            :controller => params[:controller], 
-            :action => params[:action], 
+          redirect_to ( send(
+            self.multipart_forms[form_name][:form_route] + "_path", 
             :id => form_subject.id.to_s, 
-            :multipart_form_part =>  next_part.to_s} )
+            :multipart_form_part => next_part.to_s))
           completed = false
         end
         return completed

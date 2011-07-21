@@ -2,23 +2,32 @@ require 'spec_helper'
 
 describe ActsAsMultipartForm::MultipartFormInController do
   describe "acts_as_multipart_form class method" do
+    before(:each) do
+      @controller = PeopleController.new
+    end
 
     it "should include instance methods" do
-      PeopleController.new.should be_a_kind_of (ActsAsMultipartForm::MultipartFormInController::InstanceMethods)
+      @controller.should be_a_kind_of (ActsAsMultipartForm::MultipartFormInController::InstanceMethods)
     end
 
     it "should setup the multipart_forms hash" do
-      PeopleController.new.should respond_to :multipart_forms
+      @controller.should respond_to :multipart_forms
     end
 
     it "should save the parameters to multipart_forms hash" do
-      controller = PeopleController.new
-      controller.multipart_forms[:hire_form][:parts].should == [:person_info, :person_info_update, :job_info, :job_info_update]
+      @controller.multipart_forms[:hire_form][:parts].should == [:person_info, :person_info_update, :job_info, :job_info_update]
     end
 
     it "should set the model if it is not given" do
-      controller = PeopleController.new
-      controller.multipart_forms[:hire_form][:model].should == "Person"
+      @controller.multipart_forms[:hire_form][:model].should == "Person"
+    end
+
+    it "should set the form_route if it is not given" do
+      @controller.multipart_forms[:hire_form][:form_route].should == "person_hire_form"
+    end
+
+    it "should set the show_route if it is not given" do
+      @controller.multipart_forms[:hire_form][:show_route].should == "person"
     end
   end
 
