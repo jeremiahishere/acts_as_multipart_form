@@ -5,7 +5,7 @@
     </div>
   <% end %>
   <div class='multipart_form_breadcrumb_parts'>
-    <% @available_multipart_form_parts.each do |part| %>
+    <% @available_multipart_form_parts.each_pair do |part, part_name| %>
         <% if part.to_s != @multipart_form_part.to_s %>
           <%= link_to part.to_s.titleize, send(@multipart_form_path, :id => @form_subject.id, :multipart_form_part => part) %>
         <% else %>

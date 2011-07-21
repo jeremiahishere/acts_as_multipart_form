@@ -320,6 +320,12 @@ describe ActsAsMultipartForm::MultipartFormInController do
       @controller.multipart_forms[@form_name][:parts] = [:person_info, :person_info_update, :job_info, :job_info_update]
     end
 
+    it "should return a hash" do
+      ActsAsMultipartForm.config.stub!(:show_incomplete_parts).and_return(true)
+      @controller.get_available_multipart_form_parts(@form_name, @last_completed_part).should be_a_kind_of Hash
+      
+    end
+
     it "should return the parts" do
       ActsAsMultipartForm.config.stub!(:show_incomplete_parts).and_return(true)
       results = @controller.get_available_multipart_form_parts(@form_name, @last_completed_part)

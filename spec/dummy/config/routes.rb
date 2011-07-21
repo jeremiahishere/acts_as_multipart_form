@@ -1,10 +1,11 @@
 Dummy::Application.routes.draw do
 
-  resources :people
 
   match "people/hire_form/:id/:multipart_form_part", :to => "people#hire_form", :as => "person_hire_form"
   match "people/hire_form/:id", :to => "people#hire_form", :as => "person_hire_form"
   match "people/hire_form", :to => "people#hire_form", :as => "person_hire_form"
+
+  resources :people
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

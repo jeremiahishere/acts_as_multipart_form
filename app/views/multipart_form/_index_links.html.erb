@@ -1,7 +1,11 @@
 <div class='multipart_form_index_links'>
   <div class='multipart_form_index_links_links'>
-    <% @multipart_form_index_parts[locals[:form_subject].id][:parts].each do |part| %>
-      <%= link_to part.to_s.titleize, send(@multipart_form_path, :id => locals[:form_subject].id, :multipart_form_part => part) %>
+    <% @multipart_form_index_parts[locals[:form_subject].id][:parts].each_pair do |part, part_name| %>
+      <% if ActsAsMultipartForm.config.use_numbered_parts_on_index %>
+        <%= link_to part_name.to_s, send(@multipart_form_path, :id => locals[:form_subject].id, :multipart_form_part => part) %>
+      <% else %>
+        <%= link_to part.to_s.titleize, send(@multipart_form_path, :id => locals[:form_subject].id, :multipart_form_part => part) %>
+      <% end %>
     <% end %>
   </div>
   <% if ActsAsMultipartForm.config.show_completed %>
