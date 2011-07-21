@@ -234,12 +234,7 @@ module ActsAsMultipartForm
         # set highest completed part to the current part4
         if(last_multipart_form_part?(form_name, part))
           # render the view page(not sure how to do this)
-          # possibly a good idea to check to make sure the route matches a route
-          if Rails.application.routes.named_routes.helpers.include?(route)
-            redirect_to( send(self.multipart_forms[form_name][:show_route] + "_path", form_subject) )
-          else
-            raise "The route #{route} needs to be added to your routes file."
-          end
+          redirect_to( send(self.multipart_forms[form_name][:show_route] + "_path", form_subject) )
           completed = true
         else
           # render the next page

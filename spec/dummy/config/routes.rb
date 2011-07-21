@@ -2,9 +2,9 @@ Dummy::Application.routes.draw do
 
   match "person/:id", :to => "people#show", :as => "person"
 
-  match "people/hire_form", :to => "people#hire_form", :as => "person_hire_person"
-  match "people/hire_form/:id", :to => "people#hire_form", :as => "person_hire_person"
-  match "people/hire_form/:id/:multipart_form_part", :to => "people#hire_form", :as => "person_hire_person"
+  match "people/hire_form/:id/:multipart_form_part", :to => "people#hire_form", :as => "person_hire_form"
+  match "people/hire_form/:id", :to => "people#hire_form", :as => "person_hire_form"
+  match "people/hire_form", :to => "people#hire_form", :as => "person_hire_form"
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
