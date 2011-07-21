@@ -81,7 +81,13 @@ module ActsAsMultipartForm
     
     module InstanceMethods
 
-      # needs comments
+      # A bad hack to load the multipart form information for the index page
+      # This must be called if you want to use the multipart_form/index_links partial
+      #
+      # Adds several instance variables available for the view
+      # 
+      # @param [Symbol] form_name The name of the form
+      # @param [Array] form_subjects An array of active record objects that are form subjects for the given form
       def load_multipart_form_index_links(form_name, form_subjects)
         @multipart_form_index_parts = {}
         form_subjects.each do |form_subject|
