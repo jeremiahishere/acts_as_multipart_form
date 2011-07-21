@@ -112,9 +112,11 @@ module ActsAsMultipartForm
             end
           end
           # needs to be a string so that the view can read it
+          @previous_multipart_form_part = get_previous_multipart_form_part(form_name, part).to_s
           @multipart_form_part = part.to_s
           @next_multipart_form_part = get_next_multipart_form_part(form_name, part).to_s
           @form_subject = form_subject
+          @available_multipart_form_parts = self.multipart_forms[form_name][:parts]
         end
       end
     

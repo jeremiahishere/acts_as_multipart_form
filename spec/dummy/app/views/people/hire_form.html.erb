@@ -2,9 +2,31 @@
   This is the hire form view
 </p>
 
-<%= render "multipart_form/breadcrumb", :locals => {} %>
+<div class='multipart_form_breadcrumb'>
+  <% if ActsAsMultipartForm.config.show_previous_next_links %>
+    <div class='multipart_form_breadcrumb_previous'>
+      <%= link_to "Previous", send("person_hire_person_path", :id => @form_subject.id, :multipart_form_part => @previous_multipart_form_part ) %>
+    </div>
+  <% end %>
+  <div class='multipart_form_breadcrumb_parts'>
+    <% @available_multipart_form_parts.each do |part| %>
+        <% if part.to_s != @multipart_form_part.to_s %>
+          <%= link_to part.to_s.titleize, send( "person_hire_person_path", :id => @form_subject.id, :multipart_form_part => part) %>
+        <% else %>
+          <%= part.to_s.titleize %>
+        <% end %>
+    <% end %>
+  </div>
+  <% if ActsAsMultipartForm.config.show_previous_next_links %>
+    <div class='multipart_form_breadcrumb_next'>
+      <%= link_to "Next", send("person_hire_person_path", :id => @form_subject.id, :multipart_form_part => @next_multipart_form_part ) %>
+    </end>
+  <% end %>
+</div>
 
-<%= form_for @person, :url => person_hire_person_path(@person, @next_multipart_form_part), :html => {:method => :post} do |f| %>
+<%# render "multipart_form/breadcrumb", :locals => {} %>
+
+<%= form_for @person, :url => person_hire_person_path(@form_subject, @next_multipart_form_part), :html => {:method => :post} do |f| %>
   <%= render @multipart_form_part %>
   <%= f.submit %>
 <% end %>
