@@ -88,11 +88,7 @@ module ActsAsMultipartForm
       # @return [Boolean] Whether or not the symbol starts with one of the multipart forms
       def multipart_form_method?(sym)
         if self.multipart_forms
-          self.multipart_forms.each do |form|
-            if sym.to_s.match(/^#{form}_/)
-              return true
-            end
-          end
+          return self.multipart_forms.select {|form| sym.to_s =~ /^#{form}_/}.length > 0  
         end
         return false
       end
@@ -102,13 +98,9 @@ module ActsAsMultipartForm
       # @returns [Boolean] Whether or not the argument corresponds to a multipart form, otherwise super
       def multipart_form_controller_action?(sym)
         if using_multipart_forms?
-          self.multipart_forms.each do |form|
-            if form.to_s + "_" + self.multipart_form_controller_action + "?" == sym.to_s
-              return true
-            end
-          end
-          return false
+          return self.multipart_forms.select {|form| form.to_s + "_" + self.multipart_form_controller_action + "?" == sym.to_s}.length > 0  
         end
+        return false
       end
     end
   end
