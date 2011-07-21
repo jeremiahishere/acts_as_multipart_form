@@ -116,7 +116,7 @@ module ActsAsMultipartForm
           @multipart_form_part = part.to_s
           @next_multipart_form_part = get_next_multipart_form_part(form_name, part).to_s
           @form_subject = form_subject
-          @available_multipart_form_parts = self.multipart_forms[form_name][:parts]
+          @available_multipart_form_parts = get_available_multipart_form_parts(form_name, in_progress_form.last_completed_step)
         end
       end
     
@@ -261,13 +261,13 @@ module ActsAsMultipartForm
       #
       # @param [Symbol] form_name The name of the form
       # @returns [Array] An array of form part symbols with no _update parts and other config restrictions
-      def get_available_multipart_form_parts(form_name, in_progress_form)
+      def get_available_multipart_form_parts(form_name, last_completed_part)
         add_parts = true
         parts = []
         # loop over the parts
-        self.multipart_form_parts[form][:parts].each do |part|
+        self.multipart_forms[form_name][:parts].each do |part|
           parts << part if add_parts && !part.match(/_update$/)
-          add_parts = false if !ActsAsMultipartForm.config.show_incomplete_parts && part = in_progress_form.last_completed_part
+          add_parts = false if !ActsAsMultipartForm.config.show_incomplete_parts && part = last_completed_part
         end
         return parts
       end

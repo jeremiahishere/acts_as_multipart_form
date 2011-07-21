@@ -268,4 +268,42 @@ describe ActsAsMultipartForm::MultipartFormInController do
       @controller.stub!(:last_multipart_form_part?).and_return(false)
     end
   end
+
+  describe "get_available_multipart_form_parts method" do
+    before(:each) do
+      @controller = PeopleController.new
+      @form_name = :hire_form
+      @in_progress_form = mock_model(MultipartForm::InProgressForm)
+      @in_progress_form.stub!(:last_completed_part).and_return(:person_info_update)
+      @controller.multipart_forms[@form_name][:parts] = [:person_info, :person_info_update, :job_info, :job_info_update]
+    end
+
+    it "should return the parts" do
+      ActsAsMultipartForm.config.stub!(:show_incomplete_parts).and_return(true)
+      results = @controller.get_available_multipart_form_parts(@form_name, @in_progress_form)
+      results.should include :person_info
+      results.should include :job_info
+    end
+
+    it "should not return the _update parts" do
+      ActsAsMultipartForm.config.stub!(:show_incomplete_parts).and_return(true)
+      results = @controller.get_available_multipart_form_parts(@form_name, @in_progress_form)
+      results.should_not include :person_info_update
+      results.should_not include :job_info_update
+    end
+
+    it "should not return future parts if the config is set to not show incomplete parts" do
+      ActsAsMultipartForm.config.stub!(:show_incomplete_parts).and_return(false)
+      results = @controller.get_available_multipart_form_parts(@form_name, @in_progress_form)
+      results.should include :person_info
+      results.should_not include :job_info
+
+    end
+    it "should return future parts if the config is set to show incomplete parts" do
+      ActsAsMultipartForm.config.stub!(:show_incomplete_parts).and_return(true)
+      results = @controller.get_available_multipart_form_parts(@form_name, @in_progress_form)
+      results.should include :person_info
+      results.should include :job_info
+    end
+  end
 end
