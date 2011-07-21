@@ -21,7 +21,7 @@ class PeopleController < ApplicationController
 
   def hire_form
     puts "stub method for the hire form"
-    @person = Person.create
+    @person = Person.find(params[:id])
     
     respond_to do |format|
       format.html

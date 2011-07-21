@@ -114,6 +114,7 @@ module ActsAsMultipartForm
           # needs to be a string so that the view can read it
           @multipart_form_part = part.to_s
           @next_multipart_form_part = get_next_multipart_form_part(form_name, part).to_s
+          @form_subject = form_subject
         end
       end
     
