@@ -127,6 +127,40 @@ describe ActsAsMultipartForm::MultipartFormInController do
     end
   end
 
+  describe "load_multipart_form_index_links method" do
+    before(:each) do
+      @controller = PeopleController.new
+      @form_name = :hire_form
+      @person = mock_model(Person)
+      @person.stub!(:id).and_return(34)
+      @form_subjects = [@person]
+      @ipf = mock_model(MultipartForm::InProgressForm)
+      @ipf.stub!(:last_completed_step)
+      @ipf.stub!(:completed).and_return(true)
+      @controller.stub!(:find_or_create_multipart_in_progress_form).and_return(@ipf)
+    end
+
+    it "should call find_or_create_multipart_in_progress_form" do
+      @controller.should_receive(:find_or_create_multipart_in_progress_form)
+      @controller.load_multipart_form_index_links(@form_name, @form_subjects)
+    end
+
+    it "should call get_available_multipart_form_parts" do
+      @controller.should_receive(:get_available_multipart_form_parts)
+      @controller.load_multipart_form_index_links(@form_name, @form_subjects)
+    end
+      
+    it "should call completed for in_progress_form" do
+      @ipf.should_receive(:completed).and_return(true)
+      @controller.load_multipart_form_index_links(@form_name, @form_subjects)
+    end
+
+    it "should call last_completed_step for in_progress_form" do
+      @ipf.should_receive(:last_completed_step).and_return(:form_part)
+      @controller.load_multipart_form_index_links(@form_name, @form_subjects)
+    end
+  end
+
   describe "multipart_form_handler method" do
     before(:each) do
       @controller = PeopleController.new
