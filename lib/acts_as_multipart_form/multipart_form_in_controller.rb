@@ -114,8 +114,10 @@ module ActsAsMultipartForm
               part = get_previous_multipart_form_part(form_name, part)
             end
           end
+          # get two previous parts so the previous link works
+          previous_part = get_previous_multipart_form_part(form_name, part)
+          @previous_multipart_form_part = get_previous_multipart_form_part(form_name, previous_part).to_s
           # needs to be a string so that the view can read it
-          @previous_multipart_form_part = get_previous_multipart_form_part(form_name, part).to_s
           @multipart_form_part = part.to_s
           @next_multipart_form_part = get_next_multipart_form_part(form_name, part).to_s
           @form_subject = form_subject
@@ -261,8 +263,10 @@ module ActsAsMultipartForm
         parts = []
         # loop over the parts
         self.multipart_forms[form_name][:parts].each do |part|
-          parts << part if add_parts && !part.match(/_update$/)
-          add_parts = false if !ActsAsMultipartForm.config.show_incomplete_parts && part = last_completed_part
+          parts << part if( add_parts && !part.match(/_update$/) )
+          if !ActsAsMultipartForm.config.show_incomplete_parts && part.to_s == last_completed_part.to_s
+            add_parts = false 
+          end
         end
         return parts
       end
