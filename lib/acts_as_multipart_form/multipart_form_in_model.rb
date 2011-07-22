@@ -17,15 +17,13 @@ module ActsAsMultipartForm
       # Creates the multipart_form_controller_action field to store the form the controller is currently on
       # This is used for validations among other things
       #
-      # @param [Hash or Array] options A symobl or an array of symbols that represent multipart forms in the controller
-      def acts_as_multipart_form(options = [])
-        # don't allow multiple calls
-        return if self.included_modules.include?(ActsAsMultipartForm::MultipartFormInModel::InstanceMethods)
+      # @param [Hash] options A hash of symbols that represent multipart forms in the controller
+      def multipart_formable(*args)
 
-        options = [ options] unless options.is_a?(Array)
-        mattr_accessor :multipart_form_controller_action
-        mattr_accessor :multipart_forms
-        self.multipart_forms = options
+        mattr_accessor :multipart_form_controller_action unless self.respond_to?(:multipart_form_controller_action)
+        mattr_accessor :multipart_forms unless self.respond_to?(:multipart_forms)
+        self.multipart_forms = [] unless self.multipart_forms.is_a?(Array)
+        self.multipart_forms |= args[0][:forms]
         
         # after save, the current controller action should not be set
         after_save :reset_multipart_form_controller_action

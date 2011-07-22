@@ -19,11 +19,15 @@ describe ActsAsMultipartForm::MultipartFormInModel do
     end
 
     it "should set the multipart_forms instance variable if a single symbol is given" do
-      PersonWithMultipleForms.new.multipart_forms.should == [:hire_form, :fire_form]
+      forms = PersonWithMultipleForms.new.multipart_forms
+      forms.should include :hire_form
+      forms.should include :fire_form
     end
 
-    it "should return only the first call if acts_as_multipart_form is called twice" do
-      PersonWithMultipleActsAs.new.multipart_forms.should == [:hire_form]
+    it "should return all results if acts_as_multipart_form is called twice" do
+      forms = PersonWithMultipleActsAs.new.multipart_forms
+      forms.should include :hire_form
+      forms.should include :fire_form
     end
   end
 
