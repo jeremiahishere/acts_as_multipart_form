@@ -5,6 +5,6 @@
 <%= render "multipart_form/breadcrumb" %>
 
 <%= form_for @person, :url => person_hire_form_path(:id => @form_subject.id, :multipart_form_part => @next_multipart_form_part), :html => {:method => :post} do |f| %>
-  <%= render @multipart_form_part %>
-  <%= f.submit %>
+  <%= render @multipart_form_part, :locals => {:form => f}  %>
+  <%= f.submit "Submit" %>
 <% end %>

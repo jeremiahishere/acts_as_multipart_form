@@ -2,21 +2,29 @@ class PeopleController < ApplicationController
   acts_as_multipart_form :name => :hire_form, :parts => [:person_info, :job_info], :model => "Person", :form_route => "person_hire_form"
 
   def person_info
-    #puts "Stub method for the person info"
+    @person = Person.find(params[:id])
   end
 
   def person_info_update
-    #puts "Stub method for the person info update"
-    return {:valid => true}
+    @person = Person.find(params[:id])
+    if @person.update_attributes(params[:person])
+      return {:valid => true}
+    else
+      return {:valid => false}
+    end
   end
 
   def job_info
-    #puts "stub method for the job info"
+    @person = Person.find(params[:id])
   end
 
   def job_info_update
-    #puts "Stub method for the job info update"
-    return {:valid => true}
+    @person = Person.find(params[:id])
+    if @person.update_attributes(params[:person])
+      return {:valid => true}
+    else
+      return {:valid => false}
+    end
   end
 
   def hire_form

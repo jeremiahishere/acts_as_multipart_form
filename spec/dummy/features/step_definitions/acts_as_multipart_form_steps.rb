@@ -23,3 +23,8 @@ Given /^a person with an incomplete multipart form exists$/ do
     :completed => false, 
     :last_completed_step => "person_info_update")
 end
+
+Then(/^that person's information should have updated$/) do
+  p = Person.last
+  p.name.should == "Ethan"
+end
