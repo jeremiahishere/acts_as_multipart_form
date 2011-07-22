@@ -35,12 +35,14 @@ RSpec::Core::RakeTask.new(:rcov) do |spec|
   spec.pattern = 'spec/**/*_spec.rb'
   spec.rcov = true
 end
-
-require 'cucumber/rake/task'
-# this doesn't work because it is missing some configuration information
-Cucumber::Rake::Task.new(:features)
-
 task :default => :spec
+
+#general cucumber rake task
+require 'cucumber/rake/task'
+Cucumber::Rake::Task.new(:cucumber, 'run features that should pass') do |t|
+  t.cucumber_opts = "spec/dummy/features --format progress"
+end
+
 
 require 'yard'
 YARD::Rake::YardocTask.new
