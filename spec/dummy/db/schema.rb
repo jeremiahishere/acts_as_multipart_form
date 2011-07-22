@@ -10,9 +10,9 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110715180834) do
+ActiveRecord::Schema.define(:version => 20110722130249) do
 
-  create_table "in_progress_forms", :force => true do |t|
+  create_table "multipart_form_in_progress_forms", :force => true do |t|
     t.string   "form_subject_type"
     t.integer  "form_subject_id"
     t.string   "form_name"

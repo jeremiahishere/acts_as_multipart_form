@@ -9,6 +9,7 @@ module MultipartForm
   # acts_as_multipart_form :form_name => {:type => ...
   # @author Jeremiah Hemphill
   class InProgressForm < ActiveRecord::Base
+    set_table_name "multipart_form_in_progress_forms"
     belongs_to :form_subject, :polymorphic => true
 
     validates_presence_of :form_subject

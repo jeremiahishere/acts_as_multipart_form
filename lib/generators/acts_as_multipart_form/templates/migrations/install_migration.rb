@@ -1,6 +1,6 @@
 class <%= migration_class_name %> < ActiveRecord::Migration
   def self.up
-    create_table :in_progress_forms do |t|
+    create_table :multipart_form_in_progress_forms do |t|
       t.string :form_subject_type
       t.integer :form_subject_id
       t.string :form_name
@@ -12,6 +12,6 @@ class <%= migration_class_name %> < ActiveRecord::Migration
   end
   
   def self.down
-    drop_table :in_progress_forms
+    drop_table :multipart_form_in_progress_forms
   end
 end
