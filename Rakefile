@@ -37,6 +37,7 @@ RSpec::Core::RakeTask.new(:rcov) do |spec|
 end
 
 require 'cucumber/rake/task'
+# this doesn't work because it is missing some configuration information
 Cucumber::Rake::Task.new(:features)
 
 task :default => :spec

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative 'spec_helper'
 
 describe ActsAsMultipartForm do
   it "should be valid" do

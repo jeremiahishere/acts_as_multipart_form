@@ -8,7 +8,7 @@ module MultipartForm
   # form_name relates to the name of the form on the model on the line
   # acts_as_multipart_form :form_name => {:type => ...
   # @author Jeremiah Hemphill
-  class InProgressForm < ActiveRecord::Base
+  class InProgressForm < ::ActiveRecord::Base
     set_table_name "multipart_form_in_progress_forms"
     belongs_to :form_subject, :polymorphic => true
 

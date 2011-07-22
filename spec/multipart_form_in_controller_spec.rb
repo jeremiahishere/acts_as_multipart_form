@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative 'spec_helper'
 
 describe ActsAsMultipartForm::MultipartFormInController do
   describe "acts_as_multipart_form class method" do
