@@ -3,8 +3,10 @@ module NavigationHelpers
   def path_to(page_name)
     case page_name
 
-    when /^the peeople index page$/
+    when /^the people index page$/
       "/people"
+    when /^the person hire_form page$/
+      "/people/hire_form"
 
 
     else

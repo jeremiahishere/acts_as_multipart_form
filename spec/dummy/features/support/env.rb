@@ -1,4 +1,5 @@
 require 'bundler'
+require 'ruby-debug'
 
 begin
   Bundler.setup(:default, :development)
