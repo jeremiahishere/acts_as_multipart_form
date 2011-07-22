@@ -23,11 +23,3 @@ Given /^a person with an incomplete multipart form exists$/ do
     :completed => false, 
     :last_completed_step => "person_info_update")
 end
-
-Given(/^use_numbered_parts_on_index is set to true$/) do
-  ActsAsMultipartForm.config.use_numbered_parts_on_index = true
-end
-
-Given(/^use_numbered_parts_on_index is set to false$/) do
-  ActsAsMultipartForm.config.use_numbered_parts_on_index = false
-end

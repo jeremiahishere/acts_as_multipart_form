@@ -7,6 +7,8 @@ module NavigationHelpers
       "/people"
     when /^the person hire_form page$/
       "/people/hire_form"
+    when /^the person hire_form page for that person$/
+      result = "/people/hire_form/" + Person.last.id.to_s + "/person_info"
 
 
     else
