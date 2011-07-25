@@ -164,28 +164,28 @@ Then /^the "([^"]*)" field(?: within (.*))? should not contain "([^"]*)"$/ do |f
 end
 
 # moved to generic steps
-#Then /^the "([^"]*)" checkbox(?: within (.*))? should be checked$/ do |label, parent|
-#  with_scope(parent) do
-#    field_checked = find_field(label)['checked']
-#    if field_checked.respond_to? :should
-#      field_checked.should be_true
-#    else
-#      assert field_checked
-#    end
-#  end
-#end
+Then /^the "([^"]*)" checkbox(?: within (.*))? should be checked$/ do |label, parent|
+  with_scope(parent) do
+    field_checked = find_field(label)['checked']
+    if field_checked.respond_to? :should
+      field_checked.should be_true
+    else
+      assert field_checked
+    end
+  end
+end
 
 # moved to generic steps
-#Then /^the "([^"]*)" checkbox(?: within (.*))? should not be checked$/ do |label, parent|
-#  with_scope(parent) do
-#    field_checked = find_field(label)['checked']
-#    if field_checked.respond_to? :should
-#      field_checked.should be_false
-#    else
-#      assert !field_checked
-#    end
-#  end
-#end
+Then /^the "([^"]*)" checkbox(?: within (.*))? should not be checked$/ do |label, parent|
+  with_scope(parent) do
+    field_checked = find_field(label)['checked']
+    if field_checked.respond_to? :should
+      field_checked.should be_false
+    else
+      assert !field_checked
+    end
+  end
+end
  
 Then /^(?:|I )should be on (.+)$/ do |page_name|
   current_path = URI.parse(current_url).path
