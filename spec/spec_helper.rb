@@ -29,6 +29,9 @@ RSpec.configure do |config|
 
   # == Mock Framework
   config.mock_with :rspec
+
+  # use transactions
+  config.use_transactional_fixtures = true
 end
 
 # Load support files
