@@ -4,15 +4,15 @@ Create multipart forms in rails without using multiple routes.  A controler mixi
 
 = How to use
 
-Install the gem with
+== Install the gem with
 
     gem install acts_as_multipart_form
 
-Install the migration and config with
+== Install the migration and config with
 
     rails generate acts_as_multipart_form:install
 
-Add the mixin to your controller
+== Add the mixin to your controller
 
     acts_as_multipart_form :name => :hire_form, :parts => [:person_info, :job_info], :model => "Person", :form_route => "person_hire_form"
 
@@ -22,7 +22,7 @@ Each form has a polymorphic relationship with a single record.  This relationshi
 
 Two routes can be specified for the form system. The form route corresponds to the route to the form itself.  It's default value is model_name_form_name.  In the example, the specified value would be the default value.  The show route, specified with the tag :show_route is redirected to after the last part of the multipart form is submitted and passes validations.  It defauls to model_name to correspond with the model's view page.
 
-Add the mixing to your model
+== Add the mixing to your model
 
     multipart_formable :forms => [:hire_form]
 
@@ -30,20 +30,20 @@ This is currently only used for validations.  If this is set, you can use a vali
 
     validates_presence_of :name, :if => :hire_form_personal_info?
 
-Adding a breadcrumb to the form page
+== Adding a breadcrumb to the form page
 
     <%= render "multipart_form/breadcrumb" %>
 
 This adds links to each form page and next/previous links to the page.  It must be on a multipart form view to work.  The configuration options in the initializer can be used to change the output of the partial.
 
-Adding form part links to the index page
+== Adding form part links to the index page
 
-On the controller
+=== On the controller
     
     @people = Person.all
     load_multipart_form_index_links(:hire_form, @people)
 
-On the view
+=== On the view
 
     <%= render "multipart_form/index_links",  :locals => {:form_subject => person } %>
 
