@@ -1,3 +1,7 @@
+== 0.0.3
+
+* Moved capybara and sqlite to development gems
+
 == 0.0.2
 
 * Updating the readme
