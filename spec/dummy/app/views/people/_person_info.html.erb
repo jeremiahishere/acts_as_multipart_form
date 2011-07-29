@@ -2,7 +2,7 @@
   This is the personal info multipart form partial.
 </p>
 
-<div class="field">
-  <%= locals[:form].label :name %><br />
-  <%= locals[:form].text_field :name %>
-</div>
+<%= locals[:form].fields_for @person do |fp| %>
+  <%= fp.label :name %><br />
+  <%= fp.text_field :name %>
+<% end %>

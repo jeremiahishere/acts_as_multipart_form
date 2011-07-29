@@ -4,7 +4,20 @@
 
 <%= render "multipart_form/breadcrumb" %>
 
-<%= form_for @person, :url => person_hire_form_path(:id => @form_subject.id, :multipart_form_part => @next_multipart_form_part), :html => {:method => :post} do |f| %>
+<%= form_for @form_subject, :url => person_hire_form_path(:id => @form_subject.id, :multipart_form_part => @next_multipart_form_part), :html => {:method => :post} do |f| %>
+  <div id="error_explanation">
+    <h2><%= pluralize(@form_subject.errors.count, "error") %> prohibited this information_form from being saved:</h2>
+
+    <ul>
+    <% controller.instance_variable_names.each do |var| %>
+      <% if eval(var).is_a?(ActiveRecord::Base) && eval(var).respond_to?(:errors) %>
+        <% eval(var).errors.full_messages.each do |msg| %>
+          <li><%= eval(var).class.name + ": " + msg %></li>
+        <% end %>
+      <% end %>
+    <% end %>
+    </ul>
+  </div>
   <%= render @multipart_form_part, :locals => {:form => f}  %>
   <%= f.submit "Submit" %>
 <% end %>

@@ -7,7 +7,7 @@ class PeopleController < ApplicationController
 
   def person_info_update
     @person = Person.find(params[:id])
-    if @person.update_attributes(params[:person])
+    if @person.update_attributes(params[:person][:person])
       return {:valid => true}
     else
       return {:valid => false}
@@ -29,7 +29,7 @@ class PeopleController < ApplicationController
 
   def hire_form
     #puts "stub method for the hire form"
-    @person = Person.find(params[:id])
+    #@person = Person.find(params[:id])
     
     respond_to do |format|
       format.html
