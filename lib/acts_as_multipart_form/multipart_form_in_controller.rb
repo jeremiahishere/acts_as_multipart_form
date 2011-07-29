@@ -122,6 +122,7 @@ module ActsAsMultipartForm
           part = self.multipart_forms[form_name][:parts].first
         end
 
+        form_subject_errors = nil
         # call and save the part information
         if(part && self.multipart_forms[form_name][:parts].include?(part.to_sym))
           result = self.send(part)
@@ -132,6 +133,16 @@ module ActsAsMultipartForm
               in_progress_form.update_attributes(:last_completed_step => part, :completed => completed)
             else
               # render the previous page but stay on this page so we keep the errors
+
+              # method that does not use active model errors
+              #result[:errors].each_pair do |key, value_array|
+              #  value_array.each do |value|
+              #    form_subject_errors.push key.to_s.titleize + " " + value
+              #  end
+              #end
+
+              # method that does use active model errors
+              form_subject_errors = result[:errors]
               part = get_previous_multipart_form_part(form_name, part)
             end
           end
@@ -142,6 +153,7 @@ module ActsAsMultipartForm
           @multipart_form_part = part.to_s
           @next_multipart_form_part = get_next_multipart_form_part(form_name, part).to_s
           @form_subject = form_subject
+          @form_subject_errors = form_subject_errors
           @available_multipart_form_parts = get_available_multipart_form_parts(form_name, in_progress_form.last_completed_step)
           @multipart_form_path = (self.multipart_forms[form_name][:form_route] + "_path").to_sym
           @multipart_form_complete = in_progress_form.completed
