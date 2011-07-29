@@ -7,8 +7,13 @@ class PeopleController < ApplicationController
 
   def person_info_update
     @person = Person.find(params[:id])
-    @person.update_attributes(params[:person][:person])
-    return { :valid => @person.valid?, :errors => @person.errors }
+    if params[:person] and params[:person][:person]
+      @person.update_attributes(params[:person][:person])
+      return { :valid => @person.valid?, :errors => @person.errors }
+    else
+      return { :valid => false }
+    end
+    
   end
 
   def job_info

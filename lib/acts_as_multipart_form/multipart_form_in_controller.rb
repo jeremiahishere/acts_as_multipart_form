@@ -141,7 +141,8 @@ module ActsAsMultipartForm
               #  end
               #end
 
-              # method that does use active model errors
+              # method that does use active model errors but only for a single record
+              # don't know how to merge activemodel::Errors objects from multiple models
               form_subject_errors = result[:errors]
               part = get_previous_multipart_form_part(form_name, part)
             end
