@@ -3,6 +3,17 @@
 </p>
 
 <%= locals[:form].fields_for @person do |fp| %>
+  <% if @person.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@person.errors.count, "error") %> prohibited this from being saved:</h2>
+
+      <ul>
+      <% @person.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
   <%= fp.label :name %><br />
   <%= fp.text_field :name %>
 <% end %>

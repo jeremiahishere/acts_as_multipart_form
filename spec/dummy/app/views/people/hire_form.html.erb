@@ -5,17 +5,7 @@
 <%= render "multipart_form/breadcrumb" %>
 
 <%= form_for @form_subject, :url => person_hire_form_path(:id => @form_subject.id, :multipart_form_part => @next_multipart_form_part), :html => {:method => :post} do |f| %>
-  <% if !@form_subject_errors.nil? && @form_subject_errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@form_subject_errors.count, "error") %> prohibited this from being saved:</h2>
-
-      <ul>
-      <% @form_subject_errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
+  <%= render "multipart_form/all_errors" %>
   <%= render @multipart_form_part, :locals => {:form => f}  %>
   <%= f.submit "Submit" %>
 <% end %>
