@@ -1,6 +1,6 @@
 = acts_as_multipart_form
 
-Create multipart forms in rails without using multiple routes.  A controler mixin handles loading and saving data based on partials on a single route.
+Create multipart forms in rails without using multiple routes.  A controller mixin handles loading and saving data based on partials on a single route.
 
 = How to use
 
@@ -30,12 +30,17 @@ This is currently only used for validations.  If this is set, you can use a vali
 
     validates_presence_of :name, :if => :hire_form_personal_info?
 
-== Adding a breadcrumb to the form page
+== Setting up your form
 
     <%= render "multipart_form/breadcrumb" %>
 
-This adds links to each form page and next/previous links to the page.  It must be on a multipart form view to work.  The configuration options in the initializer can be used to change the output of the partial.
+    <%= form_for @form_subject, :url => person_hire_form_path(:id => @form_subject.id, :multipart_form_part => @next_multipart_form_part), :html => {:method => :post} do |f| %>
+      <%= render "multipart_form/all_errors" %>
+      <%= render @multipart_form_part, :locals => {:form => f}  %>
+      <%= f.submit "Submit" %>
+    <% end %>
 
+The breadcrumb adds links to the other multipart for parts.  The all_errors partial is a substitute for putting error handling on each individual partial.  The url and @form_subject instance variable are necessary to make the form submit and redirect correctly.
 == Adding form part links to the index page
 
 === On the controller
@@ -43,7 +48,7 @@ This adds links to each form page and next/previous links to the page.  It must 
     @people = Person.all
     load_multipart_form_index_links(:hire_form, @people)
 
-=== On the view
+=== On the index view
 
     <%= render "multipart_form/index_links",  :locals => {:form_subject => person } %>
 
@@ -56,6 +61,7 @@ Creates links to each form part for the given form subject.  The load_multipart_
 * Improve the behavior of the previous and next links in the breadcrumb
 * Add A controller and views generator to generate the files in the rails project so they can be edited for project specific needs
 * Improve code quality of the mixin where it makes variables available to views
+* Move the logic in the multipart_form partials to heleprs
 
 == Contributing to acts_as_multipart_form
  
