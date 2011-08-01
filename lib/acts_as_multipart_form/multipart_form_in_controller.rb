@@ -33,6 +33,7 @@ module ActsAsMultipartForm
       # def person_info_update
       #   @person = Person.find(params[:id])
       #   @person = Person.new if @person.nil?
+      #   @person.multipart_form_controller_action = "person_info_update"
       #
       #   valid = @person.update_attributes(params[:person])
       #   return {:valid => valid}
@@ -41,6 +42,7 @@ module ActsAsMultipartForm
       # def job_info
       #   @job_position = JobPosition.new
       #   @job_position.person = Person.find(load_multipart_form_data(form_instance_id, :person))
+      #   @job_position.multipart_form_controller_action = "job_info_update"
       # end
       # 
       # def job_info_update
