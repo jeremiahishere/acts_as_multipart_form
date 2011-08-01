@@ -207,7 +207,9 @@ module ActsAsMultipartForm
 
       # Given a form name and a form subject id, it creates the form subject
       # The form subject is defined by the id and the multipart form's model attribute
-      # The subject is created with values and saved without validations (this might change in the future)
+      #
+      # The subject is created with no values and saved without validations (this might change in the future)
+      # This is not a good situation but I don't know how to ensure the form subject gets saved otherwise
       #
       # @param [Symbol] form_name The name of the multipart form
       # @param [Integer] form_dubject_id The id of the form subject (could be nil)
