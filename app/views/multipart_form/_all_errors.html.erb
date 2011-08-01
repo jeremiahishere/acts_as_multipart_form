@@ -1,14 +1,15 @@
 <div id="error_explanation">
-  <h2>Errors prohibited this form from being saved:</h2>
 
-  <ul> 
-    <% controller.instance_variable_names.each do |var| %>
-      <% if eval(var).is_a?(ActiveRecord::Base) && eval(var).errors.is_a?(ActiveModel::Errors) %>
+  <% vars = controller.instance_variable_names.select { |var| eval(var).is_a?(ActiveRecord::Base) && eval(var).errors.is_a?(ActiveModel::Errors)} %>
+  <% if vars.sum { |v| eval(v).errors.count } > 0 %>
+    <h2><%=pluralize(vars.sum { |v| eval(v).errors.count }, "error") %> prohibited this form from being saved:</h2>
+    <ul> 
+      <% vars.each do |var| %>
         <% eval(var).errors.full_messages.each do |msg| %>
           <li><%= eval(var).class.name + ": " + msg %></li>
-        <% end %>
-      <% end %> 
-    <% end %>   
+        <% end %> 
+      <% end %>   
   </ul> 
+  <% end %>
 </div>
 
