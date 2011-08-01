@@ -1,6 +1,8 @@
 == 0.0.3
 
 * Moved capybara and sqlite to development gems
+* Added an all_errors partial
+* Updated the commenting
 
 == 0.0.2
 
