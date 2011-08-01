@@ -35,7 +35,7 @@ module ActsAsMultipartForm
       #   @person = Person.new if @person.nil?
       #
       #   valid = @person.update_attributes(params[:person])
-      #   return {:valid => valid, :errors => @person.errors}
+      #   return {:valid => valid}
       # end
       #
       # def job_info
@@ -45,7 +45,7 @@ module ActsAsMultipartForm
       # 
       # def job_info_update
       #   valid = @job_position.update_attributes(params[:job_position])
-      #   return {:valid => valid, :errors => @job_position.errors}
+      #   return {:valid => valid}
       # end
       #
       # @param [Array] args An array of hashes that determines the data for a multipart form

@@ -7,9 +7,10 @@ class PeopleController < ApplicationController
 
   def person_info_update
     @person = Person.find(params[:id])
+    @person.multipart_form_controller_action = "person_info_update"
     if params[:person] and params[:person][:person]
       @person.update_attributes(params[:person][:person])
-      return { :valid => @person.valid?, :errors => @person.errors }
+      return { :valid => @person.valid? }
     else
       return { :valid => false }
     end
@@ -22,10 +23,11 @@ class PeopleController < ApplicationController
 
   def job_info_update
     @person = Person.find(params[:id])
+    @person.multipart_form_controller_action = "job_info_update"
     if @person.update_attributes(params[:person])
       return {:valid => true}
     else
-      return {:valid => false, :errors => @person.errors}
+      return {:valid => false }
     end
   end
 
