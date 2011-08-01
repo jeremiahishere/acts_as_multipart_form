@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{acts_as_multipart_form}
-  s.version = "0.0.2"
+  s.version = "0.0.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = [%q{Jeremiah Hemphill}, %q{Ethan Pemble}]
-  s.date = %q{2011-07-28}
+  s.date = %q{2011-08-01}
   s.description = %q{Multipart forms using custom routes}
   s.email = %q{jeremiah@cloudspace.com}
   s.extra_rdoc_files = [
@@ -28,6 +28,7 @@ Gem::Specification.new do |s|
     "acts_as_multipart_form.gemspec",
     "app/controllers/multipart_form/in_progress_forms_controller.rb",
     "app/models/multipart_form/in_progress_form.rb",
+    "app/views/multipart_form/_all_errors.html.erb",
     "app/views/multipart_form/_breadcrumb.html.erb",
     "app/views/multipart_form/_index_links.html.erb",
     "app/views/multipart_form/in_progress_form/index.html.erb",
@@ -74,6 +75,7 @@ Gem::Specification.new do |s|
     "spec/dummy/db/migrate/20110715180834_create_people.rb",
     "spec/dummy/db/migrate/20110722130249_create_multipart_form_tables.rb",
     "spec/dummy/db/schema.rb",
+    "spec/dummy/features/all_errors_partial.feature",
     "spec/dummy/features/form_breadcrumb.feature",
     "spec/dummy/features/form_submission.feature",
     "spec/dummy/features/index_links.feature",
@@ -114,8 +116,8 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<rails>, ["= 3.0.7"])
-      s.add_runtime_dependency(%q<capybara>, [">= 0.4.0"])
-      s.add_runtime_dependency(%q<sqlite3>, [">= 0"])
+      s.add_development_dependency(%q<capybara>, [">= 0.4.0"])
+      s.add_development_dependency(%q<sqlite3>, [">= 0"])
       s.add_development_dependency(%q<ruby-debug19>, [">= 0"])
       s.add_development_dependency(%q<rspec>, ["~> 2.6.0"])
       s.add_development_dependency(%q<rspec-rails>, ["~> 2.6.1"])
