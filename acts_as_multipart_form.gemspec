@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{acts_as_multipart_form}
-  s.version = "0.0.3"
+  s.version = "0.0.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = [%q{Jeremiah Hemphill}, %q{Ethan Pemble}]
-  s.date = %q{2011-08-01}
+  s.date = %q{2012-01-19}
   s.description = %q{Multipart forms using custom routes}
   s.email = %q{jeremiah@cloudspace.com}
   s.extra_rdoc_files = [
@@ -39,9 +39,11 @@ Gem::Specification.new do |s|
     "lib/acts_as_multipart_form/multipart_form_in_controller.rb",
     "lib/acts_as_multipart_form/multipart_form_in_model.rb",
     "lib/acts_as_multipart_form/railtie.rb",
+    "lib/generators/acts_as_multipart_form/controllers_generator.rb",
     "lib/generators/acts_as_multipart_form/install_generator.rb",
     "lib/generators/acts_as_multipart_form/templates/config.rb",
     "lib/generators/acts_as_multipart_form/templates/migrations/install_migration.rb.erb",
+    "lib/generators/acts_as_multipart_form/views_generator.rb",
     "spec/acts_as_multipart_form_spec.rb",
     "spec/dummy/Rakefile",
     "spec/dummy/app/controllers/application_controller.rb",
