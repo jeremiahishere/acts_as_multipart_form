@@ -67,7 +67,7 @@ module ActsAsMultipartForm
           end
           # sets default model if it is not set
           arg[:model] = self.to_s.gsub("Controller", "").singularize unless arg.has_key?(:model)
-          arg[:form_route] = (arg[:model].gsub("::", "").underscore + "_" + arg[:name].to_s) unless arg.has_key?(:form_route)
+          arg[:form_route] = (arg[:name].to_s + "_" + arg[:model].gsub("::", "").underscore) unless arg.has_key?(:form_route)
           arg[:show_route] = (arg[:model].gsub("::", "").underscore) unless arg.has_key?(:show_route)
           # copy args to fields
           self.multipart_forms[arg[:name]] = arg

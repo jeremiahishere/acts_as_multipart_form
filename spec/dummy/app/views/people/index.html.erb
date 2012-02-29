@@ -9,7 +9,7 @@
       <td><%= person.id %></td>
       <td><%= person.name %></td>
       <td>
-        <%= render "multipart_form/index_links", :locals => {:form_subject => person } %>
+        <%= render :partial => "multipart_form/index_links", :locals => {:form_subject => person } %>
       </td>
     </tr>
   <% end %>
