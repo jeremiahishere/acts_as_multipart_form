@@ -1,6 +1,8 @@
 == unreleased changes
 
 * Added indices to the migration
+* Updated the controller mixin to do a better job handling namespaced models
+* Clarified how the route needs to be setup in the readme
 
 == 0.0.5
 
