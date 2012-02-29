@@ -1,3 +1,11 @@
+== unreleased changes
+
+* Added indices to the migration
+* Updated the controller mixin to do a better job handling namespaced models
+* Clarified how the route needs to be setup in the readme
+* Changed the ordering of the default form partial in the controller mixin
+* Updated index links partial to not use the locals hash directly
+
 == 0.0.5
 
 * Updated gem requirements

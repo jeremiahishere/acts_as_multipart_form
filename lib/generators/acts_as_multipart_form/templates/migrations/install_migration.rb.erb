@@ -9,6 +9,8 @@ class <%= migration_class_name %> < ActiveRecord::Migration
 
       t.timestamps
     end
+    add_index :multipart_form_in_progress_forms, [:form_subject_type, :form_subject_id], :name => "multipart_form_ipf_form_subject"
+    add_index :multipart_form_in_progress_forms, :form_name
   end
   
   def self.down
