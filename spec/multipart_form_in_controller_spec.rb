@@ -34,7 +34,7 @@ describe ActsAsMultipartForm::MultipartFormInController do
   describe "get_next_multipart_form_part method" do
     before(:each) do
       @controller = PeopleController.new
-      @controller.multipart_forms[:hire_form][:parts] = [:person_info, :job_info]
+      @controller.multipart_forms[:hire_form][:parts] = [:person_info, :person_info_update, :job_info, :job_info_update]
     end
 
     it "should respond to get_next_multipart_form_part" do
@@ -42,18 +42,27 @@ describe ActsAsMultipartForm::MultipartFormInController do
     end
 
     it "should return the next part" do
-      @controller.get_next_multipart_form_part(:hire_form, :person_info).should == :job_info
+      @controller.get_next_multipart_form_part(:hire_form, :person_info).should == :person_info_update
     end
 
     it "should return the current part if on the last part" do
-      @controller.get_next_multipart_form_part(:hire_form, :job_info).should == :job_info
+      @controller.get_next_multipart_form_part(:hire_form, :job_info_update).should == :job_info_update
+    end
+
+    it "should return the second next part if skip_update_part is set to true" do
+      @controller.get_next_multipart_form_part(:hire_form, :person_info, true).should == :job_info
+    end
+
+    it "should return the current part if skip update part is set and on the last or second to last part" do
+      @controller.get_next_multipart_form_part(:hire_form, :job_info_update, true).should == :job_info_update
+      @controller.get_next_multipart_form_part(:hire_form, :job_info, true).should == :job_info
     end
   end
 
   describe "get_previous_multipart_form_part method" do
     before(:each) do
       @controller = PeopleController.new
-      @controller.multipart_forms[:hire_form][:parts] = [:person_info, :job_info]
+      @controller.multipart_forms[:hire_form][:parts] = [:person_info, :person_info_update, :job_info, :job_info_update]
     end
 
     it "should respond to get_previous_multipart_form_part" do
@@ -61,11 +70,20 @@ describe ActsAsMultipartForm::MultipartFormInController do
     end
 
     it "should return the previous part" do
-      @controller.get_previous_multipart_form_part(:hire_form, :job_info).should == :person_info
+      @controller.get_previous_multipart_form_part(:hire_form, :job_info).should == :person_info_update
     end
 
     it "Should return the current part if on the first part" do
       @controller.get_previous_multipart_form_part(:hire_form, :person_info).should == :person_info
+    end
+
+    it "should return the second previous part if skip_update_part is set to true" do
+      @controller.get_previous_multipart_form_part(:hire_form, :job_info, true).should == :person_info
+    end
+
+    it "should return the first part if skip update part is set to true and on the first or second part" do
+      @controller.get_previous_multipart_form_part(:hire_form, :person_info, true).should == :person_info
+      @controller.get_previous_multipart_form_part(:hire_form, :person_info_update, true).should == :person_info
     end
   end
 
