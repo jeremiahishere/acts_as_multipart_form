@@ -3,7 +3,7 @@ source "http://rubygems.org"
 # Example:
 #   gem "activesupport", ">= 2.3.5"
 
-gem "rails", "3.0.7"
+gem "rails", "~>3.0.7"
 
 
 # Add dependencies to develop your gem here.
@@ -20,9 +20,7 @@ group :development do
   gem "cucumber", ">= 0"
   gem "cucumber-rails"
   gem "database_cleaner"
-  gem "bundler", "~> 1.0.0"
   gem "jeweler", "~> 1.6.3"
-  gem "rcov", ">= 0"
 
   # hudson ci
   gem "ci_reporter"
