@@ -1,16 +1,17 @@
 <div class='multipart_form_index_links'>
   <div class='multipart_form_index_links_links'>
-    <% @multipart_form_index_parts[locals[:form_subject].id][:parts].each do |part| %>
+    <% debugger %>
+    <% @multipart_form_index_parts[form_subject.id][:parts].each do |part| %>
       <% if ActsAsMultipartForm.config.use_numbered_parts_on_index %>
-        <%= link_to part[:number].to_s, send(@multipart_form_path, :id => locals[:form_subject].id, :multipart_form_part => part[:name]) %>
+        <%= link_to part[:number].to_s, send(@multipart_form_path, :id => form_subject.id, :multipart_form_part => part[:name]) %>
       <% else %>
-        <%= link_to part[:name].to_s.titleize, send(@multipart_form_path, :id => locals[:form_subject].id, :multipart_form_part => part[:name]) %>
+        <%= link_to part[:name].to_s.titleize, send(@multipart_form_path, :id => form_subject.id, :multipart_form_part => part[:name]) %>
       <% end %>
     <% end %>
   </div>
   <% if ActsAsMultipartForm.config.show_completed %>
     <div class='multipart_form_index_links_complete'>
-      <% if @multipart_form_index_parts[locals[:form_subject].id][:completed] %>
+      <% if @multipart_form_index_parts[form_subject.id][:completed] %>
         Complete
       <% else %>
         Incomplete
