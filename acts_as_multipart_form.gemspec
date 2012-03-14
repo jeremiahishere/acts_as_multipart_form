@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "acts_as_multipart_form"
-  s.version = "0.0.6"
+  s.version = "0.0.7"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jeremiah Hemphill", "Ethan Pemble"]
-  s.date = "2012-02-29"
+  s.date = "2012-03-14"
   s.description = "Multipart forms using custom routes"
   s.email = "jeremiah@cloudspace.com"
   s.extra_rdoc_files = [
@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
     "README.rdoc"
   ]
   s.files = [
+    ".rspec",
     "CHANGELOG",
     "Gemfile",
     "Gemfile.lock",
