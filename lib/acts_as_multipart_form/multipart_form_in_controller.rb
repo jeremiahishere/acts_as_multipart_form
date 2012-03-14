@@ -137,12 +137,13 @@ module ActsAsMultipartForm
               part = get_previous_multipart_form_part(form_name, part)
             end
           end
-          # get two previous parts so the previous link works
-          previous_part = get_previous_multipart_form_part(form_name, part)
-          @previous_multipart_form_part = get_previous_multipart_form_part(form_name, previous_part).to_s
+          # move forward or backwards 2 parts for the previous and next links
+          skip_update_part = true
+          @previous_multipart_form_part = get_previous_multipart_form_part(form_name, part, skip_update_part).to_s
+          @next_multipart_form_part = get_next_multipart_form_part(form_name, part, skip_update_part).to_s
+
           # needs to be a string so that the view can read it
           @multipart_form_part = part.to_s
-          @next_multipart_form_part = get_next_multipart_form_part(form_name, part).to_s
           @form_subject = form_subject
           @available_multipart_form_parts = get_available_multipart_form_parts(form_name, in_progress_form.last_completed_step)
           @multipart_form_path = (self.multipart_forms[form_name][:form_route] + "_path").to_sym
@@ -158,29 +159,45 @@ module ActsAsMultipartForm
         self.multipart_forms.keys.include?(sym)
       end
 
-      # Gets the next multipart form part for the form or returns the current part if it is first
-      #
-      # @param [Symbol] form The name of the multipart form
-      # @param [Symbol] part The name of the current part
-      # @returns [Symbol] The name of the next part
-      def get_previous_multipart_form_part(form, part)
-        part_index = self.multipart_forms[form][:parts].index(part)
-        if part_index > 0
-          return self.multipart_forms[form][:parts][part_index - 1]
-        else
-          return part
-        end
-      end
-
       # Gets the previous multipart form part for the form or returns the current part if it is first
       #
       # @param [Symbol] form The name of the multipart form
       # @param [Symbol] part The name of the current part
-      # @returns [Symbol] The name of the previous part
-      def get_next_multipart_form_part(form, part)
+      # @param [Boolean] skip_update_part If set to true, moves back two parts instead of one
+      # @returns [Symbol] The name of the next part
+      def get_previous_multipart_form_part(form, part, skip_update_part = false)
         part_index = self.multipart_forms[form][:parts].index(part)
-        if part_index < self.multipart_forms[form][:parts].length - 1
-          return self.multipart_forms[form][:parts][part_index + 1]
+
+        if skip_update_part
+          prev_part_distance = 2
+        else
+          prev_part_distance = 1
+        end
+
+        if part_index - prev_part_distance >= 0
+          return self.multipart_forms[form][:parts][part_index - prev_part_distance]
+        else
+          return self.multipart_forms[form][:parts].first
+        end
+      end
+
+      # Gets the next multipart form part for the form or returns the current part if it is first
+      #
+      # @param [Symbol] form The name of the multipart form
+      # @param [Symbol] part The name of the current part
+      # @param [Boolean] skip_update_part If set to true, moves forward two parts instead of one
+      # @returns [Symbol] The name of the previous part
+      def get_next_multipart_form_part(form, part, skip_update_part = false)
+        part_index = self.multipart_forms[form][:parts].index(part)
+
+        if skip_update_part
+          next_part_distance = 2
+        else
+          next_part_distance = 1
+        end
+
+        if part_index < self.multipart_forms[form][:parts].length - next_part_distance
+          return self.multipart_forms[form][:parts][part_index + next_part_distance]
         else
           return part
         end
