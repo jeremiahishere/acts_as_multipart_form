@@ -137,12 +137,16 @@ module ActsAsMultipartForm
               part = get_previous_multipart_form_part(form_name, part)
             end
           end
-          # move forward or backwards 2 parts for the previous and next links
+
+          # move forward or backwards 2 parts for the previous and next links on the bredcrumb
           skip_update_part = true
-          @previous_multipart_form_part = get_previous_multipart_form_part(form_name, part, skip_update_part).to_s
-          @next_multipart_form_part = get_next_multipart_form_part(form_name, part, skip_update_part).to_s
+          @breadcrumb_links= {
+            :previous => get_previous_multipart_form_part(form_name, part, skip_update_part).to_s,
+            :next => get_next_multipart_form_part(form_name, part, skip_update_part).to_s,
+          }
 
           # needs to be a string so that the view can read it
+          @next_multipart_form_part = get_next_multipart_form_part(form_name, part).to_s
           @multipart_form_part = part.to_s
           @form_subject = form_subject
           @available_multipart_form_parts = get_available_multipart_form_parts(form_name, in_progress_form.last_completed_step)
