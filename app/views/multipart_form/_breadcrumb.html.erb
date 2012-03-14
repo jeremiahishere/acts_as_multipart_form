@@ -1,7 +1,7 @@
 <div class='multipart_form_breadcrumb'>
   <% if ActsAsMultipartForm.config.show_previous_next_links %>
     <div class='multipart_form_breadcrumb_previous'>
-      <%= link_to "Previous", send(@multipart_form_path, :id => @form_subject.id, :multipart_form_part => @previous_multipart_form_part ) %>
+      <%= link_to "Previous", send(@multipart_form_path, :id => @form_subject.id, :multipart_form_part => @breadcrumb_links[:previous] ) %>
     </div>
   <% end %>
   <div class='multipart_form_breadcrumb_parts'>
@@ -15,7 +15,7 @@
   </div>
   <% if ActsAsMultipartForm.config.show_previous_next_links %>
     <div class='multipart_form_breadcrumb_next'>
-      <%= link_to "Next", send(@multipart_form_path, :id => @form_subject.id, :multipart_form_part => @next_multipart_form_part ) %>
+      <%= link_to "Next", send(@multipart_form_path, :id => @form_subject.id, :multipart_form_part => @breadcrumb_links[:next] ) %>
     </div>
   <% end %>
 </div>

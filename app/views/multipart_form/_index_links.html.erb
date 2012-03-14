@@ -1,6 +1,5 @@
 <div class='multipart_form_index_links'>
   <div class='multipart_form_index_links_links'>
-    <% debugger %>
     <% @multipart_form_index_parts[form_subject.id][:parts].each do |part| %>
       <% if ActsAsMultipartForm.config.use_numbered_parts_on_index %>
         <%= link_to part[:number].to_s, send(@multipart_form_path, :id => form_subject.id, :multipart_form_part => part[:name]) %>

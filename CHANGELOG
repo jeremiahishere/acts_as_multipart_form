@@ -1,5 +1,10 @@
 == unreleased changes
 
+== 0.0.7
+
+* Updated future work in readme
+* Updated the behavior of the previous and next links to skip update pages
+
 == 0.0.6
 
 * Added indices to the migration
