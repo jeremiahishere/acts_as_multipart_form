@@ -1,5 +1,9 @@
 == unreleased changes
 
+== 0.0.8
+
+* Fixed a bug where the part would not be re-called if it failed validations
+
 == 0.0.7
 
 * Updated future work in readme
