@@ -62,6 +62,7 @@ Creates links to each form part for the given form subject.  The load_multipart_
 * Fix the index links loading so that the user does not have to explicitly call a method when they are needed
 * Improve code quality of the mixin where it makes variables available to views
 * Find a fix for having to explicitly create the form subject in the code.  The current system pushes us towards models that only hold the form subject id.  The problem is that it is possible to use a multipart form without a specific form model.  This leads to orphaned or blank records.
+* Increase test coverage for the multipart_form_handler
 
 == Contributing to acts_as_multipart_form
  

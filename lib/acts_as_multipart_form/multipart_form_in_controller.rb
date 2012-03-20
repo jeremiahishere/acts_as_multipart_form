@@ -135,6 +135,9 @@ module ActsAsMultipartForm
             else
               # render the previous page but stay on this page so we keep the errors
               part = get_previous_multipart_form_part(form_name, part)
+              # actually run the part we just found 
+              # can't believe we missed this one (JH 3-20-2012)
+              self.send(part)
             end
           end
 
