@@ -110,7 +110,7 @@ module ActsAsMultipartForm
         form_name = params[:action].to_sym
         form_subject_id = params[:id]
 
-        form_subject = find_or_create_multipart_form_subject(form_name, form_subject_id)
+        @form_subject = find_or_create_multipart_form_subject(form_name, form_subject_id)
         params[:id] = form_subject.id
 
         in_progress_form = find_or_create_multipart_in_progress_form(form_name, form_subject)
@@ -135,6 +135,9 @@ module ActsAsMultipartForm
             else
               # render the previous page but stay on this page so we keep the errors
               part = get_previous_multipart_form_part(form_name, part)
+              # actually run the part we just found 
+              # can't believe we missed this one (JH 3-20-2012)
+              self.send(part)
             end
           end
 
@@ -148,7 +151,6 @@ module ActsAsMultipartForm
           # needs to be a string so that the view can read it
           @next_multipart_form_part = get_next_multipart_form_part(form_name, part).to_s
           @multipart_form_part = part.to_s
-          @form_subject = form_subject
           @available_multipart_form_parts = get_available_multipart_form_parts(form_name, in_progress_form.last_completed_step)
           @multipart_form_path = (self.multipart_forms[form_name][:form_route] + "_path").to_sym
           @multipart_form_complete = in_progress_form.completed

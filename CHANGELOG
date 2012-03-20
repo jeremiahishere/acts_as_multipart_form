@@ -1,5 +1,13 @@
 == unreleased changes
 
+== 0.0.9
+
+* Moved the code that declares the form subject an instance variable to earlier in the multipart form handler.  We were running into issues where we could not set default values in the controller part actions because @form_subject was not yet available.
+
+== 0.0.8
+
+* Fixed a bug where the part would not be re-called if it failed validations
+
 == 0.0.7
 
 * Updated future work in readme
