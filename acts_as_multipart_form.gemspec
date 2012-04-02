@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "acts_as_multipart_form"
-  s.version = "0.0.8"
+  s.version = "0.0.9"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jeremiah Hemphill", "Ethan Pemble"]
-  s.date = "2012-03-20"
+  s.date = "2012-04-02"
   s.description = "Multipart forms using custom routes"
   s.email = "jeremiah@cloudspace.com"
   s.extra_rdoc_files = [
