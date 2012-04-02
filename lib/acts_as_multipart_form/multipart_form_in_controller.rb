@@ -111,9 +111,9 @@ module ActsAsMultipartForm
         form_subject_id = params[:id]
 
         @form_subject = find_or_create_multipart_form_subject(form_name, form_subject_id)
-        params[:id] = form_subject.id
+        params[:id] = @form_subject.id
 
-        in_progress_form = find_or_create_multipart_in_progress_form(form_name, form_subject)
+        in_progress_form = find_or_create_multipart_in_progress_form(form_name, @form_subject)
 
         # set the part based on the params or in progress form
         if params[:multipart_form_part]
@@ -130,7 +130,7 @@ module ActsAsMultipartForm
           
           if(part.match(/_update$/))
             if(result && result[:valid])
-              completed = redirect_to_next_multipart_form_part(form_name, form_subject, part)
+              completed = redirect_to_next_multipart_form_part(form_name, @form_subject, part)
               in_progress_form.update_attributes(:last_completed_step => part, :completed => completed)
             else
               # render the previous page but stay on this page so we keep the errors
