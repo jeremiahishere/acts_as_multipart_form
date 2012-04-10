@@ -1,5 +1,9 @@
 == unreleased changes
 
+== 0.0.12
+
+* Fixed an issue where a symbol was used as the value in a where clause, causing rails 3.1 to freak out.
+
 == 0.0.11
 
 * Relaxed rails version restriction
