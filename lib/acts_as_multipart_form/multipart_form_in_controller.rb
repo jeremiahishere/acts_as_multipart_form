@@ -261,12 +261,12 @@ module ActsAsMultipartForm
         in_progress_form = MultipartForm::InProgressForm.where(
           :form_subject_id => form_subject.id, 
           :form_subject_type => form_subject.class.to_s, 
-          :form_name => form_name).first
+          :form_name => form_name.to_s).first
         if !in_progress_form
           in_progress_form = MultipartForm::InProgressForm.create(
             :form_subject_id => form_subject.id, 
             :form_subject_type => form_subject.class.to_s, 
-            :form_name => form_name, 
+            :form_name => form_name.to_s, 
             :last_completed_step => "none", 
             :completed => false)
         end
