@@ -12,6 +12,8 @@ module MultipartForm
     set_table_name "multipart_form_in_progress_forms"
     belongs_to :form_subject, :polymorphic => true
 
+    attr_accessible :form_subject, :form_subject_id, :form_subject_type, :form_name, :last_completed_step, :completed
+
     validates_presence_of :form_subject
     validates_presence_of :form_name
     validates_presence_of :last_completed_step
