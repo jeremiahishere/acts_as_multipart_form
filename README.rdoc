@@ -4,18 +4,19 @@ Create multipart forms in rails without using multiple routes.  A controller mix
 
 = How to use
 
-== Install the gem by adding this to your gemfile
+== Add the gem to your gemfile
 
     gem "acts_as_multipart_form"
 
-== Install the migration and config with
+== Install the migration and config
 
     rails generate acts_as_multipart_form:install
     rake db:migrate
 
 == Add the mixin to your controller
 
-    acts_as_multipart_form :name => :hire_form, :parts => [:person_info, :job_info], :model => "Person", :form_route => "person_hire_form"
+    PeopleController < ApplicationController
+      acts_as_multipart_form :name => :hire_form, :parts => [:person_info, :job_info]
 
 The parts correspond to methods in the controller and partials in the controller's views folder.  Additional methods called :person_info_update and :job_info_update are also necessary to handle saving the data.  
 
@@ -23,7 +24,7 @@ Each form has a polymorphic relationship with a single record.  This relationshi
 
 Two routes can be specified for the form system. The form route corresponds to the route to the form itself.  It's default value is model_name_form_name.  In the example, the specified value would be the default value.  The show route, specified with the tag :show_route is redirected to after the last part of the multipart form is submitted and passes validations.  It defaults to model_name to correspond with the model's view page.
 
-Note that when you add the route to your route file, it must be able to match both get and post requests.
+See MultipartFormInController for additional documentation.
 
 == Add the mixin to your model
 
@@ -33,18 +34,10 @@ This is currently only used for validations.  If this is set, you can use a vali
 
     validates_presence_of :name, :if => :hire_form_personal_info?
 
-== Add the mixin to your controller
-    
-    PeopleController < ApplicationController
-      acts_as_multipart_form :hire_form, :parts => [:personal, :job]
-
-You will also need to add these methods: hire_form, personal, personal_update, job, and job_update. Hire_form is called each time the page is accessed and calls the correct form part.  Person and job correspond to the actual form views.  Person_update and job_update set and validate the user input.  See the MultipartFormInController documentation for additional information.
-
 == Add the route
 
     resource :people do
       match 'edit', to: 'people#hire_form', :via => [:get, :post]
-      # optionally add a new route as well
 
 == Setting up your form
 
@@ -55,7 +48,7 @@ app/views/people/hire_form.html.erb:
     <%= render "multipart_form/breadcrumb" %>
 
     <%= semantic_form_for @form_subject, :url => person_hire_form_path(:id => @form_subject.id, :multipart_form_part => @next_multipart_form_part), :html => { :method => :post } do |f| %>
-      <%= render :partial => "multipart_form/all_errors" %>
+      <%= f.semantic_errors %>
       <%= render :partial => @multipart_form_part, :locals => {:form => f}  %>
       <%= f.submit "Submit" %>
     <% end %>
@@ -73,10 +66,6 @@ app/views/people/_job.html.erb:
       <%= form.input :hire_date %>
       <%= form.input :salary %>
     <% end %>
-
-Note that the error partial is only needed if you are storing multiple objects that are not nested in your form submits.  Otherwise a semantic_errors or standard error code for the @form_subject will be sufficient.
-
-The breadcrumb adds links to the other multipart for parts.  The all_errors partial is a substitute for putting error handling on each individual partial.  The url and @form_subject instance variable are necessary to make the form submit and redirect correctly.
 
 == Adding form part links to the index page
 
@@ -113,4 +102,3 @@ Creates links to each form part for the given form subject.  The load_multipart_
 
 Copyright (c) 2011 Jeremiah Hemphill. See LICENSE.txt for
 further details.
-
