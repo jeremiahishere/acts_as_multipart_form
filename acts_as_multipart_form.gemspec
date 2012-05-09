@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "acts_as_multipart_form"
-  s.version = "0.0.12"
+  s.version = "0.0.13"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jeremiah Hemphill", "Ethan Pemble"]
-  s.date = "2012-04-10"
+  s.date = "2012-05-09"
   s.description = "Multipart forms using custom routes"
   s.email = "jeremiah@cloudspace.com"
   s.extra_rdoc_files = [
@@ -102,7 +102,7 @@ Gem::Specification.new do |s|
     "spec/dummy/script/rails",
     "spec/in_progress_form_spec.rb",
     "spec/integration/navigation_spec.rb",
-    "spec/multipart_form_in_controller_integeration_spec.rb",
+    "spec/multipart_form_in_controller_integration_spec.rb",
     "spec/multipart_form_in_controller_spec.rb",
     "spec/multipart_form_in_model_integration_spec.rb",
     "spec/multipart_form_in_model_spec.rb",
