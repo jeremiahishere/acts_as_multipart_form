@@ -13,16 +13,34 @@ Create multipart forms in rails without using multiple routes.  A controller mix
     rails generate acts_as_multipart_form:install
     rake db:migrate
 
-== Add the mixin to your controller
+== Add the mixin and methods to your controller
 
     PeopleController < ApplicationController
-      acts_as_multipart_form :name => :hire_form, :parts => [:person_info, :job_info]
+      acts_as_multipart_form :name => :hire_form, :parts => [:personal, :job]
 
-The parts correspond to methods in the controller and partials in the controller's views folder.  Additional methods called :person_info_update and :job_info_update are also necessary to handle saving the data.  
+    def hire_form
+      @form_subject.multipart_form_controller_action = params[:multipart_form_part]
+    end
 
-Each form has a polymorphic relationship with a single record.  This relationship is specified by the model key's value.  This is how the form is loaded on the index page and the only association it has with the rest of the system.
+    def personal
+    end
 
-Two routes can be specified for the form system. The form route corresponds to the route to the form itself.  It's default value is model_name_form_name.  In the example, the specified value would be the default value.  The show route, specified with the tag :show_route is redirected to after the last part of the multipart form is submitted and passes validations.  It defaults to model_name to correspond with the model's view page.
+    def personal_update
+      return { valid: @form_subject.update_attributes(params[:person])}
+    end
+
+    def job
+    end
+
+    def job_update
+      return { valid: @form_subject.update_attributes(params[:person])}
+    end
+
+This example splits the fields for the Person model across two parts.
+
+Each part needs two methods for the displayed form and data update steps.  The data update steps need to return a hash with the key valid set to true or false.  If part based validations are needed, the controller action must be set.  It can be done in either the main action, hire_form, or only on the actions that need it.
+
+Each form has a polymorphic relationship with a single record.  This relationship is specified by the model key's value.  This is how the form is loaded on the index page and the only association it has with the rest of the system.  The record is stored in the @form_subject variable.
 
 See MultipartFormInController for additional documentation.
 
@@ -36,7 +54,7 @@ This is currently only used for validations.  If this is set, you can use a vali
 
 == Add the route
 
-    resource :people do
+    resources :people do
       match 'edit', to: 'people#hire_form', :via => [:get, :post]
 
 == Setting up your form
@@ -79,7 +97,6 @@ app/views/people/_job.html.erb:
     <%= render "multipart_form/index_links",  :locals => {:form_subject => person } %>
 
 Creates links to each form part for the given form subject.  The load_multipart_form_index_links must be called to load the data for the links.  The configuration options in the initializer can be used to change the output of the partial.
-
 
 == Future work
 
