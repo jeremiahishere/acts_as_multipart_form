@@ -50,7 +50,7 @@ See MultipartFormInController for additional documentation.
 
 This is currently only used for validations.  If this is set, you can use a validation like this to only validate a field if the save is coming from a specific multipart form part.
 
-    validates_presence_of :name, :if => :hire_form_personal_info?
+    validates_presence_of :name, :if => :hire_form_personal_update?
 
 == Add the route
 
@@ -63,7 +63,7 @@ These examples use formtastic but it is not required.
 
 app/views/people/hire_form.html.erb:
 
-    <%= render "multipart_form/breadcrumb" %>
+    <%= render :partial => "multipart_form/breadcrumb" %>
 
     <%= semantic_form_for @form_subject, :url => person_hire_form_path(:id => @form_subject.id, :multipart_form_part => @next_multipart_form_part), :html => { :method => :post } do |f| %>
       <%= f.semantic_errors %>
