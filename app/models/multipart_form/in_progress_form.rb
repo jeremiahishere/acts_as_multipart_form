@@ -14,7 +14,8 @@ module MultipartForm
 
     attr_accessible :form_subject, :form_subject_id, :form_subject_type, :form_name, :last_completed_step, :completed
 
-    validates_presence_of :form_subject
+    validates_presence_of :form_subject_id
+    validates_presence_of :form_subject_type
     validates_presence_of :form_name
     validates_presence_of :last_completed_step
     validates_inclusion_of :completed, :in => [true, false]
