@@ -25,7 +25,8 @@ describe MultipartForm::InProgressForm do
     end
 
     it "should require a form subject" do
-      @ip_form.should have(1).error_on(:form_subject)
+      @ip_form.should have(1).error_on(:form_subject_id)
+      @ip_form.should have(1).error_on(:form_subject_type)
     end
 
     it "should require a form name" do

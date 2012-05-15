@@ -93,7 +93,7 @@ module ActsAsMultipartForm
       def load_multipart_form_index_links(form_name, form_subjects)
         @multipart_form_index_parts = {}
         form_subjects.each do |form_subject|
-          in_progress_form = find_or_create_multipart_in_progress_form(form_name, form_subject)
+          in_progress_form = find_or_initialize_multipart_in_progress_form(form_name, form_subject)
           @multipart_form_index_parts[form_subject.id] = {}
           @multipart_form_index_parts[form_subject.id][:parts] = get_available_multipart_form_parts(form_name, in_progress_form.last_completed_step)
           @multipart_form_index_parts[form_subject.id][:completed] = in_progress_form.completed
@@ -110,10 +110,10 @@ module ActsAsMultipartForm
         form_name = params[:action].to_sym
         form_subject_id = params[:id]
 
-        @form_subject = find_or_create_multipart_form_subject(form_name, form_subject_id)
+        @form_subject = find_or_initialize_multipart_form_subject(form_name, form_subject_id)
         params[:id] = @form_subject.id
 
-        in_progress_form = find_or_create_multipart_in_progress_form(form_name, @form_subject)
+        in_progress_form = find_or_initialize_multipart_in_progress_form(form_name, @form_subject)
 
         # set the part based on the params or in progress form
         if params[:multipart_form_part]
@@ -131,7 +131,12 @@ module ActsAsMultipartForm
           if(part.match(/_update$/))
             if(result && result[:valid])
               completed = redirect_to_next_multipart_form_part(form_name, @form_subject, part)
-              in_progress_form.update_attributes(:last_completed_step => part, :completed => completed)
+              # added form_subject_id in case it was not set when the in_progress_form was created (JH 5-15-2012)
+              # this would happen on a new page, but not an edit page
+              in_progress_form.update_attributes({
+                :form_subject_id => @form_subject.id, 
+                :last_completed_step => part, 
+                :completed => completed })
             else
               # render the previous page but stay on this page so we keep the errors
               part = get_previous_multipart_form_part(form_name, part)
@@ -231,39 +236,41 @@ module ActsAsMultipartForm
       # Given a form name and a form subject id, it creates the form subject
       # The form subject is defined by the id and the multipart form's model attribute
       #
-      # The subject is created with no values and saved without validations (this might change in the future)
-      # This is not a good situation but I don't know how to ensure the form subject gets saved otherwise
+      # The subject is initialized with no values and it is not saved
       #
       # @param [Symbol] form_name The name of the multipart form
       # @param [Integer] form_dubject_id The id of the form subject (could be nil)
-      # @return [FormSubject] The form subject object based on the multipart form's model or nil if the id is set and not found
-      def find_or_create_multipart_form_subject(form_name, form_subject_id)
+      # @return [FormSubject] The form subject in the database or a new form subject instance
+      def find_or_initialize_multipart_form_subject(form_name, form_subject_id)
         # find or create the form subject
         model = self.multipart_forms[form_name][:model]
         if form_subject_id
           form_subject = model.constantize.find(form_subject_id)
         else
           form_subject = model.constantize.new()
-          form_subject.save(:validate => false)
         end
         return form_subject
       end
 
       # Returns the InProgressForm object when given the form name and subject
-      # Creates the InPorgressForm object if it doesn't exist for the given form name/form subject pair
+      #
+      # Initializes but does not asve the InPorgressForm object if it doesn't exist for the given form name/form subject pair
       #
       # @param [Symbol] form_name The name of the multipart form
       # @param [FormSubject] form_subject The multipart form's subject
       # @returns [InProgressForm] The associated or new in progress form object
-      def find_or_create_multipart_in_progress_form(form_name, form_subject)
+      def find_or_initialize_multipart_in_progress_form(form_name, form_subject)
         # find or create the in progress form
         # not sure why the polymorphic relationship isn't working here
         in_progress_form = MultipartForm::InProgressForm.where(
           :form_subject_id => form_subject.id, 
           :form_subject_type => form_subject.class.to_s, 
           :form_name => form_name.to_s).first
-        if !in_progress_form
-          in_progress_form = MultipartForm::InProgressForm.create(
+
+        # if the form subject is a new_record, in_progress_form should be nil
+        # trying to stop weird edge cases from killing me (JH 5-15-2012)
+        if form_subject.new_record? || !in_progress_form
+          in_progress_form = MultipartForm::InProgressForm.new(
             :form_subject_id => form_subject.id, 
             :form_subject_type => form_subject.class.to_s, 
             :form_name => form_name.to_s, 
