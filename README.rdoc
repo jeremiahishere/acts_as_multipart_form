@@ -55,7 +55,8 @@ This is currently only used for validations.  If this is set, you can use a vali
 == Add the route
 
     resources :people do
-      match 'edit', to: 'people#hire_form', :via => [:get, :post]
+      match 'edit/:id', to: 'people#hire_form', :via => [:get, :post]
+      match 'new', to: 'people#hire_form', :via => [:get, :post] # optional
 
 == Setting up your form
 
