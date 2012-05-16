@@ -93,7 +93,7 @@ module ActsAsMultipartForm
       def load_multipart_form_index_links(form_name, form_subjects)
         @multipart_form_index_parts = {}
         form_subjects.each do |form_subject|
-          in_progress_form = find_or_create_multipart_in_progress_form(form_name, form_subject)
+          in_progress_form = find_or_initialize_multipart_in_progress_form(form_name, form_subject)
           @multipart_form_index_parts[form_subject.id] = {}
           @multipart_form_index_parts[form_subject.id][:parts] = get_available_multipart_form_parts(form_name, in_progress_form.last_completed_step)
           @multipart_form_index_parts[form_subject.id][:completed] = in_progress_form.completed
@@ -110,10 +110,10 @@ module ActsAsMultipartForm
         form_name = params[:action].to_sym
         form_subject_id = params[:id]
 
-        @form_subject = find_or_create_multipart_form_subject(form_name, form_subject_id)
+        @form_subject = find_or_initialize_multipart_form_subject(form_name, form_subject_id)
         params[:id] = @form_subject.id
 
-        in_progress_form = find_or_create_multipart_in_progress_form(form_name, @form_subject)
+        in_progress_form = find_or_initialize_multipart_in_progress_form(form_name, @form_subject)
 
         # set the part based on the params or in progress form
         if params[:multipart_form_part]
@@ -241,7 +241,7 @@ module ActsAsMultipartForm
       # @param [Symbol] form_name The name of the multipart form
       # @param [Integer] form_dubject_id The id of the form subject (could be nil)
       # @return [FormSubject] The form subject in the database or a new form subject instance
-      def find_or_create_multipart_form_subject(form_name, form_subject_id)
+      def find_or_initialize_multipart_form_subject(form_name, form_subject_id)
         # find or create the form subject
         model = self.multipart_forms[form_name][:model]
         if form_subject_id
@@ -259,7 +259,7 @@ module ActsAsMultipartForm
       # @param [Symbol] form_name The name of the multipart form
       # @param [FormSubject] form_subject The multipart form's subject
       # @returns [InProgressForm] The associated or new in progress form object
-      def find_or_create_multipart_in_progress_form(form_name, form_subject)
+      def find_or_initialize_multipart_in_progress_form(form_name, form_subject)
         # find or create the in progress form
         # not sure why the polymorphic relationship isn't working here
         in_progress_form = MultipartForm::InProgressForm.where(
