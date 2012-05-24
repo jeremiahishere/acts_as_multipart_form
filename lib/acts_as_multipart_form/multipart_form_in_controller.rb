@@ -131,11 +131,17 @@ module ActsAsMultipartForm
           if(part.match(/_update$/))
             if(result && result[:valid])
               completed = redirect_to_next_multipart_form_part(form_name, @form_subject, part)
+
+              # if the form has been completed, set last_completed step to the first part of the form (JH 5-24-2012)
+              # the next time the user edits the form, they will go to the first page
+              # they should not be automatically redirected to the show page
+              saved_step = ( completed ? "none" : part )
+
               # added form_subject_id in case it was not set when the in_progress_form was created (JH 5-15-2012)
               # this would happen on a new page, but not an edit page
               in_progress_form.update_attributes({
                 :form_subject_id => @form_subject.id, 
-                :last_completed_step => part, 
+                :last_completed_step => saved_step,
                 :completed => completed })
             else
               # render the previous page but stay on this page so we keep the errors
