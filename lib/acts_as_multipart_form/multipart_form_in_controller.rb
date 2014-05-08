@@ -55,6 +55,8 @@ module ActsAsMultipartForm
 
         mattr_accessor :multipart_forms unless self.respond_to?(:multipart_forms)
         self.multipart_forms = {} unless self.multipart_forms.is_a?(Hash)
+        
+        mattr_accessor :stay_string unless self.respond_to?(:stay_string)
 
         forms = [] 
         args.each do |arg| 
@@ -72,6 +74,8 @@ module ActsAsMultipartForm
           # copy args to fields
           self.multipart_forms[arg[:name]] = arg
           forms << arg[:name]
+
+          self.stay_string = arg[:stay_on_button]
         end
 
         before_filter :multipart_form_handler, :only => forms
@@ -129,7 +133,7 @@ module ActsAsMultipartForm
           result = self.send(part)
           
           if(part.match(/_update$/))
-            if(result && result[:valid])
+            if(result && result[:valid] && params[:commit] != self.stay_string )
               completed = redirect_to_next_multipart_form_part(form_name, @form_subject, part)
 
               # if the form has been completed, set last_completed step to the first part of the form (JH 5-24-2012)
