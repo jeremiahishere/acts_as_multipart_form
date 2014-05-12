@@ -1,5 +1,9 @@
 == unreleased changes
 
+== 0.0.16
+
+* User can pass a string value into stay_on_button key, this will indicate the text that a form submit can have to validate the form but not redirect to next form page (i.e. having 'Save' and 'Save & Continue' buttons)
+
 == 0.0.15
 
 * After submitting the last part of the form, when going back to the form, default to the first page of the form
